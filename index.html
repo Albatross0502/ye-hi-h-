@@ -1,17 +1,21 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DUSAD AGROFOOD PVT LTD — Store Item Out Register</title>
+  <title>DUSAD AGROFOOD PVT. LTD. — Store Item Out Register</title>
 
-  <!-- Preconnect to Google Apps Script endpoints to shave off DNS/TLS latency -->
+  <!-- Preconnect & DNS prefetch to Google Apps Script endpoints for faster register submission -->
+  <link rel="dns-prefetch" href="https://script.google.com" />
+  <link rel="dns-prefetch" href="https://script.googleusercontent.com" />
   <link rel="preconnect" href="https://script.google.com" crossorigin />
   <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin />
 
   <style>
     /* ==========================================================================
-       DUSAD AGROFOOD PVT LTD — STORE ITEM OUT REGISTER
+       DUSAD AGROFOOD PVT. LTD. — STORE ITEM OUT REGISTER
        Industrial MIS Design System (White / Gold / Charcoal)
        ========================================================================== */
     :root {
@@ -58,6 +62,8 @@
       --radius-lg: 16px;
       --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04),
                      0 12px 32px -4px rgba(16, 24, 40, 0.08);
+      --shadow-dropdown: 0 12px 28px -4px rgba(16, 24, 40, 0.14),
+                         0 4px 10px -2px rgba(16, 24, 40, 0.06);
       --shadow-btn: 0 4px 12px rgba(217, 151, 8, 0.28);
       --shadow-focus: 0 0 0 3.5px rgba(245, 183, 27, 0.28);
 
@@ -91,6 +97,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
+      overflow-x: hidden;
     }
 
     .register-shell {
@@ -100,24 +107,19 @@
       border: 1px solid var(--border-light);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-card);
-      overflow: hidden;
+      overflow: visible;
       animation: shellEnter 0.42s var(--ease) both;
     }
 
     @keyframes shellEnter {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .top-accent-bar {
       height: 6px;
       width: 100%;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
       background: linear-gradient(90deg, var(--gold-600) 0%, var(--gold-400) 50%, var(--gold-300) 100%);
     }
 
@@ -181,6 +183,12 @@
       border-color: var(--success-border);
       background: var(--success-bg);
       color: var(--success-text);
+    }
+
+    .integration-pill.is-error {
+      border-color: var(--error-border);
+      background: var(--error-bg);
+      color: var(--error-text);
     }
 
     .integration-pill.is-syncing {
@@ -247,14 +255,8 @@
       line-height: 1.45;
     }
 
-    .integration-notice.hidden {
-      display: none;
-    }
-
-    .integration-notice svg {
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
+    .integration-notice.hidden { display: none; }
+    .integration-notice svg { flex-shrink: 0; margin-top: 1px; }
 
     .notification-area {
       margin: 18px 32px 0;
@@ -267,14 +269,8 @@
     }
 
     @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .alert-box {
@@ -292,23 +288,38 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
+      flex: 1;
+      min-width: 0;
     }
 
-    .alert-icon {
-      flex-shrink: 0;
-      margin-top: 2px;
+    .alert-icon { flex-shrink: 0; margin-top: 2px; }
+    .alert-title { font-weight: 700; display: block; margin-bottom: 2px; }
+    .alert-message { font-weight: 400; line-height: 1.45; word-break: break-word; }
+
+    .alert-extra-actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .alert-title {
-      font-weight: 700;
-      display: block;
-      margin-bottom: 2px;
+    .alert-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid currentColor;
+      background: rgba(255, 255, 255, 0.72);
+      color: inherit;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
     }
 
-    .alert-message {
-      font-weight: 400;
-      line-height: 1.45;
-    }
+    .alert-action-btn:hover { background: #ffffff; }
 
     .alert-close {
       background: transparent;
@@ -319,13 +330,11 @@
       padding: 4px;
       border-radius: 6px;
       line-height: 1;
+      flex-shrink: 0;
       transition: opacity 0.15s ease, background-color 0.15s ease;
     }
 
-    .alert-close:hover {
-      opacity: 1;
-      background: rgba(0, 0, 0, 0.06);
-    }
+    .alert-close:hover { opacity: 1; background: rgba(0, 0, 0, 0.06); }
 
     .alert-box.is-success {
       background: var(--success-bg);
@@ -345,20 +354,25 @@
       color: var(--warning-text);
     }
 
-    .register-form {
-      padding: 26px 32px 32px;
-    }
+    .register-form { padding: 26px 32px 32px; }
 
     .form-meta-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 20px;
       padding-bottom: 12px;
       border-bottom: 1px dashed var(--border-light);
       font-size: 0.8rem;
       color: var(--ink-muted);
+      flex-wrap: wrap;
+    }
+
+    .meta-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
@@ -369,6 +383,7 @@
       background: var(--gold-50);
       border: 1px solid var(--border-gold);
       color: var(--gold-700);
+      font-family: inherit;
       font-size: 0.76rem;
       font-weight: 600;
       padding: 5px 10px;
@@ -377,13 +392,9 @@
       transition: background-color 0.18s var(--ease), transform 0.15s var(--ease);
     }
 
-    .sync-now-btn:hover {
-      background: var(--gold-100);
-    }
-
-    .sync-now-btn:active {
-      transform: scale(0.97);
-    }
+    .sync-now-btn:hover:not(:disabled) { background: var(--gold-100); }
+    .sync-now-btn:active:not(:disabled) { transform: scale(0.97); }
+    .sync-now-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .form-grid {
       display: grid;
@@ -401,6 +412,7 @@
       flex-direction: column;
       gap: 7px;
       position: relative;
+      min-width: 0;
     }
 
     .field-label {
@@ -421,6 +433,22 @@
       flex-wrap: wrap;
     }
 
+    .req-star { color: var(--error-text); font-weight: 800; margin-left: 1px; }
+
+    .field-mode-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--gold-100);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-700);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .field-mode-badge.hidden { display: none; }
+
     .field-num {
       display: inline-flex;
       align-items: center;
@@ -436,11 +464,7 @@
       flex-shrink: 0;
     }
 
-    .hindi-label {
-      font-weight: 500;
-      color: var(--ink-muted);
-      font-size: 0.84rem;
-    }
+    .hindi-label { font-weight: 500; color: var(--ink-muted); font-size: 0.84rem; }
 
     .field-control {
       width: 100%;
@@ -460,36 +484,18 @@
         box-shadow 0.18s var(--ease);
     }
 
-    .field-control::placeholder {
-      color: var(--ink-placeholder);
-      font-weight: 400;
-    }
-
+    .field-control::placeholder { color: var(--ink-placeholder); font-weight: 400; }
     .field-control:hover:not(:disabled):not(:focus) {
       background-color: var(--bg-input-hover);
       border-color: var(--border-medium);
     }
-
     .field-control:focus {
       background-color: var(--bg-input-focus);
       border-color: var(--gold-500);
       box-shadow: var(--shadow-focus);
     }
-
-    .field-control:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-    }
-
-    select.field-control {
-      appearance: none;
-      -webkit-appearance: none;
-      padding-right: 40px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 13px center;
-      cursor: pointer;
-    }
+    .field-control:disabled { opacity: 0.65; cursor: not-allowed; }
+    .field-control.hidden { display: none; }
 
     textarea.field-control {
       height: auto;
@@ -499,7 +505,54 @@
       line-height: 1.5;
     }
 
-    .field-group.has-error .field-control {
+    .field-hint { font-size: 0.75rem; color: var(--ink-muted); line-height: 1.35; }
+    .field-hint.hidden { display: none; }
+
+    /* Dana "Other / Unclassified" Review Helper Bar */
+    .review-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: var(--gold-50);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-700);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .review-bar.hidden { display: none; }
+
+    .review-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gold-500);
+      background: #ffffff;
+      color: var(--gold-700);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.15s ease;
+    }
+
+    .review-toggle-btn:hover { background: var(--gold-100); }
+
+    .review-machine-override {
+      margin-top: 8px;
+    }
+
+    .review-machine-override.hidden { display: none; }
+
+    .field-group.has-error .field-control,
+    .field-group.has-error .ss-trigger {
       background-color: #fffafa;
       border-color: var(--error-text);
       box-shadow: 0 0 0 3px var(--error-ring);
@@ -509,7 +562,6 @@
       font-size: 0.78rem;
       font-weight: 500;
       color: var(--error-text);
-      min-height: 0;
       display: none;
       align-items: center;
       gap: 5px;
@@ -525,6 +577,347 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ========================================================================
+       SEARCHABLE DROPDOWN COMPONENT (INDUSTRIAL MIS STYLE)
+       ======================================================================== */
+    .ss-wrapper { position: relative; width: 100%; }
+    .ss-wrapper.hidden { display: none; }
+
+    .ss-trigger-shell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .ss-trigger {
+      width: 100%;
+      min-height: 46px;
+      padding: 8px 40px 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      text-align: left;
+      font-family: inherit;
+      font-size: 0.94rem;
+      font-weight: 500;
+      color: var(--ink-primary);
+      background-color: var(--bg-input);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      outline: none;
+      position: relative;
+      transition:
+        background-color 0.18s var(--ease),
+        border-color 0.18s var(--ease),
+        box-shadow 0.18s var(--ease);
+    }
+
+    .ss-wrapper.has-selection .ss-trigger {
+      padding-right: 68px;
+    }
+
+    .ss-trigger:hover:not(:disabled) {
+      background-color: var(--bg-input-hover);
+      border-color: var(--border-medium);
+    }
+
+    .ss-trigger:focus,
+    .ss-wrapper.is-open .ss-trigger {
+      background-color: var(--bg-input-focus);
+      border-color: var(--gold-500);
+      box-shadow: var(--shadow-focus);
+    }
+
+    .ss-trigger:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      background-color: var(--bg-input);
+    }
+
+    .ss-trigger-text {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ss-trigger-text.is-placeholder { color: var(--ink-placeholder); font-weight: 400; }
+
+    .ss-clear-value-btn {
+      position: absolute;
+      right: 36px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink-muted);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 2;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .ss-wrapper.has-selection .ss-clear-value-btn {
+      display: inline-flex;
+    }
+
+    .ss-clear-value-btn:hover {
+      background: rgba(20, 25, 32, 0.08);
+      color: var(--ink-primary);
+    }
+
+    .ss-chevron {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: transform 0.18s var(--ease), color 0.18s ease;
+    }
+
+    .ss-wrapper.is-open .ss-chevron {
+      transform: translateY(-50%) rotate(180deg);
+      color: var(--gold-600);
+    }
+
+    .ss-panel {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 60;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-gold);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-dropdown);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: dropdownFade 0.15s var(--ease) both;
+    }
+
+    .ss-wrapper.is-open .ss-panel { display: flex; }
+
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ss-search-wrap {
+      padding: 8px;
+      background: var(--gold-50);
+      border-bottom: 1px solid var(--border-light);
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .ss-search-icon {
+      position: absolute;
+      left: 18px;
+      color: var(--ink-muted);
+      pointer-events: none;
+      display: inline-flex;
+    }
+
+    .ss-search-input {
+      width: 100%;
+      height: 38px;
+      padding: 0 34px 0 32px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--ink-primary);
+      background: #ffffff;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .ss-search-input::placeholder { color: var(--ink-placeholder); font-weight: 400; }
+    .ss-search-input:focus {
+      border-color: var(--gold-500);
+      box-shadow: 0 0 0 2.5px rgba(245, 183, 27, 0.22);
+    }
+
+    .ss-search-clear {
+      position: absolute;
+      right: 14px;
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .ss-search-clear.is-visible { display: inline-flex; }
+    .ss-search-clear:hover { background: var(--bg-input); color: var(--ink-primary); }
+
+    .ss-list {
+      list-style: none;
+      max-height: 260px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 5px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .ss-option {
+      padding: 10px 12px;
+      min-height: 40px;
+      border-radius: 7px;
+      font-size: 0.89rem;
+      font-weight: 500;
+      color: var(--ink-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      line-height: 1.38;
+      word-break: break-word;
+      user-select: none;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .ss-option:hover,
+    .ss-option.is-active { background: var(--gold-50); color: var(--ink-primary); }
+
+    .ss-option.is-selected {
+      background: var(--gold-100);
+      color: var(--gold-700);
+      font-weight: 700;
+    }
+
+    .ss-option-meta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      background: var(--bg-input);
+      padding: 2px 7px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .ss-option.is-selected .ss-option-meta { background: #ffffff; color: var(--gold-700); }
+
+    .ss-empty {
+      padding: 16px 12px;
+      text-align: center;
+      font-size: 0.86rem;
+      color: var(--ink-muted);
+    }
+
+    .ss-status-bar {
+      padding: 6px 10px;
+      font-size: 0.73rem;
+      color: var(--ink-muted);
+      background: var(--bg-subtle);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .ss-status-bar.hidden { display: none; }
+
+    /* ========================================================================
+       PENDING / FAILED QUEUE PANEL (HONEST STATUS TRACKING)
+       ======================================================================== */
+    .queue-panel {
+      margin-top: 22px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-subtle);
+      overflow: hidden;
+    }
+
+    .queue-panel.hidden { display: none; }
+
+    .queue-panel-header {
+      padding: 10px 14px;
+      background: var(--gold-50);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .queue-panel-title { font-size: 0.82rem; font-weight: 700; color: var(--gold-700); }
+    .queue-list { list-style: none; max-height: 210px; overflow-y: auto; }
+
+    .queue-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.8rem;
+    }
+
+    .queue-item:last-child { border-bottom: none; }
+    .queue-item-main { min-width: 0; flex: 1; }
+    .queue-item-summary { font-weight: 600; color: var(--ink-primary); word-break: break-word; }
+    .queue-item-sub { color: var(--ink-muted); font-size: 0.74rem; margin-top: 2px; word-break: break-word; }
+    .queue-item-controls { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .status-chip.is-pending { background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning-text); }
+    .status-chip.is-failed { background: var(--error-bg); border: 1px solid var(--error-border); color: var(--error-text); }
+    .status-chip.is-saved { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--success-text); }
+
+    .queue-mini-btn {
+      padding: 4px 8px;
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid var(--border-medium);
+      background: #ffffff;
+      color: var(--ink-secondary);
+      cursor: pointer;
+    }
+
+    .queue-mini-btn:hover:not(:disabled) { background: var(--bg-input); color: var(--ink-primary); }
+    .queue-mini-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ========================================================================
+       FORM ACTIONS & BUTTONS
+       ======================================================================== */
     .form-actions {
       margin-top: 28px;
       padding-top: 22px;
@@ -548,6 +941,7 @@
       font-weight: 700;
       border-radius: var(--radius-md);
       cursor: pointer;
+      touch-action: manipulation;
       border: 1.5px solid transparent;
       transition:
         transform 0.16s var(--ease),
@@ -556,28 +950,10 @@
         border-color 0.2s var(--ease);
     }
 
-    .btn:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-
-    .btn-secondary {
-      background: #ffffff;
-      color: var(--ink-secondary);
-      border-color: var(--border-medium);
-    }
-
-    .btn-secondary:hover:not(:disabled) {
-      background: var(--bg-input);
-      border-color: #b8c0cc;
-      color: var(--ink-primary);
-    }
-
-    .btn-secondary:active:not(:disabled) {
-      transform: scale(0.98);
-    }
+    .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    .btn-secondary { background: #ffffff; color: var(--ink-secondary); border-color: var(--border-medium); }
+    .btn-secondary:hover:not(:disabled) { background: var(--bg-input); border-color: #b8c0cc; color: var(--ink-primary); }
+    .btn-secondary:active:not(:disabled) { transform: scale(0.98); }
 
     .btn-primary {
       background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
@@ -593,14 +969,28 @@
       box-shadow: 0 6px 18px rgba(217, 151, 8, 0.36);
     }
 
-    .btn-primary:active:not(:disabled) {
-      transform: translateY(0) scale(0.99);
+    .btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.99); }
+
+    .btn-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(20, 25, 32, 0.22);
+      border-top-color: #141920;
+      border-radius: 50%;
+      display: none;
+      animation: spin 0.7s linear infinite;
     }
+
+    .btn-primary.is-loading .btn-spinner { display: inline-block; }
+    .btn-primary.is-loading .btn-icon { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .register-footer {
       padding: 13px 32px;
       background: var(--bg-subtle);
       border-top: 1px solid var(--border-light);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -611,52 +1001,18 @@
     }
 
     @media (max-width: 720px) {
-      body {
-        padding: 14px 10px 28px;
-      }
-
-      .register-header {
-        padding: 20px 18px 18px;
-      }
-
-      .main-heading {
-        font-size: 1.32rem;
-      }
-
-      .hindi-heading {
-        font-size: 1rem;
-      }
-
-      .integration-notice,
-      .notification-area {
-        margin-left: 18px;
-        margin-right: 18px;
-      }
-
-      .register-form {
-        padding: 20px 18px 24px;
-      }
-
-      .col-span-6,
-      .col-span-8,
-      .col-span-4 {
-        grid-column: span 12;
-      }
-
-      .form-actions {
-        flex-direction: column-reverse;
-        align-items: stretch;
-      }
-
-      .btn {
-        width: 100%;
-      }
-
-      .register-footer {
-        padding: 12px 18px;
-        justify-content: center;
-        text-align: center;
-      }
+      body { padding: 14px 10px 28px; }
+      .register-header { padding: 20px 18px 18px; }
+      .main-heading { font-size: 1.32rem; }
+      .hindi-heading { font-size: 1rem; }
+      .integration-notice, .notification-area { margin-left: 18px; margin-right: 18px; }
+      .register-form { padding: 20px 18px 24px; }
+      .col-span-6, .col-span-8, .col-span-4 { grid-column: span 12; }
+      .ss-search-input { font-size: 16px; height: 42px; }
+      .ss-option { min-height: 44px; padding: 11px 12px; }
+      .form-actions { flex-direction: column-reverse; align-items: stretch; }
+      .btn { width: 100%; }
+      .register-footer { padding: 12px 18px; justify-content: center; text-align: center; }
     }
   </style>
 </head>
@@ -670,12 +1026,12 @@
       <div class="header-top-row">
         <div class="company-badge">
           <span class="company-badge-dot" aria-hidden="true"></span>
-          <span>DUSAD AGROFOOD PVT LTD</span>
+          <span>DUSAD AGROFOOD PVT. LTD.</span>
         </div>
 
         <div id="integrationPill" class="integration-pill" role="status" aria-live="polite">
           <span class="status-dot" aria-hidden="true"></span>
-          <span id="integrationPillText">Checking Connection...</span>
+          <span id="integrationPillText">Initializing Master...</span>
         </div>
       </div>
 
@@ -686,7 +1042,7 @@
       </div>
     </header>
 
-    <!-- INTEGRATION NOTICE (Only visible if SCRIPT_URL is empty) -->
+    <!-- INTEGRATION NOTICE (Visible only if SCRIPT_URL is empty) -->
     <div id="integrationNotice" class="integration-notice hidden" role="note">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="12" cy="12" r="10"></circle>
@@ -694,7 +1050,7 @@
         <line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
       <div>
-        <strong>Frontend Mode Active:</strong> Live Google Sheets submission is not connected. Add your Google Apps Script Web App URL to <code>SCRIPT_URL</code> to enable live saving.
+        <strong>Frontend Mode Active:</strong> Embedded dropdown master is active, but live Google Sheets register saving is not connected. Configure <code>SCRIPT_URL</code> to enable saving.
       </div>
     </div>
 
@@ -706,6 +1062,7 @@
           <div>
             <span id="alertTitle" class="alert-title"></span>
             <span id="alertMessage" class="alert-message"></span>
+            <div id="alertExtraActions" class="alert-extra-actions"></div>
           </div>
         </div>
         <button type="button" id="alertCloseBtn" class="alert-close" aria-label="Dismiss notification">
@@ -720,65 +1077,97 @@
     <!-- STORE ITEM OUT REGISTER FORM -->
     <form id="storeOutForm" class="register-form" novalidate autocomplete="off">
       <div class="form-meta-bar">
-        <div>Fill available details and submit — blank fields are allowed</div>
-        <button type="button" id="syncDateTimeBtn" class="sync-now-btn" title="Refresh Date and Out Time to current device time">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          <span>Set Current Date &amp; Time</span>
-        </button>
+        <div>Fields marked <span class="req-star">*</span> are required; other details may be left blank</div>
+        <div class="meta-actions">
+          <button type="button" id="syncDateTimeBtn" class="sync-now-btn" title="Refresh Date and Out Time to current device time">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Set Current Date &amp; Time</span>
+          </button>
+        </div>
       </div>
 
       <div class="form-grid">
 
-        <!-- 1. Date (दिनांक) -->
-        <div class="field-group col-span-6" data-field="date">
-          <label class="field-label" for="entryDate">
+        <!-- 1. Department (विभाग) -->
+        <div class="field-group col-span-6" data-field="department">
+          <label class="field-label" id="label-department" for="departmentTrigger">
             <span class="label-left">
               <span class="field-num">1</span>
-              <span>Date <span class="hindi-label">(दिनांक)</span></span>
+              <span>Department <span class="hindi-label">(विभाग)</span><span class="req-star" aria-hidden="true">*</span></span>
             </span>
           </label>
-          <input
-            type="date"
-            id="entryDate"
-            name="date"
-            class="field-control"
-          />
-          <div class="field-error" id="error-date"></div>
+          <div id="departmentDropdown" class="ss-wrapper"></div>
+          <div class="field-error" id="error-department"></div>
         </div>
 
-        <!-- 2. Department (विभाग) -->
-        <div class="field-group col-span-6" data-field="department">
-          <label class="field-label" for="department">
+        <!-- 2. Machine Use (मशीन उपयोग) -->
+        <div class="field-group col-span-6" data-field="machineUse">
+          <label class="field-label" id="label-machineUse" for="machineUseTrigger">
             <span class="label-left">
               <span class="field-num">2</span>
-              <span>Department <span class="hindi-label">(विभाग)</span></span>
+              <span>Machine Use <span class="hindi-label">(मशीन उपयोग)</span><span class="req-star" aria-hidden="true">*</span></span>
             </span>
+            <span id="machineModeBadge" class="field-mode-badge hidden">Manual Entry</span>
           </label>
-          <select id="department" name="department" class="field-control">
-            <option value="">-- Select Department / विभाग चुनें --</option>
-          </select>
-          <div class="field-error" id="error-department"></div>
+          <div id="machineUseDropdown" class="ss-wrapper"></div>
+          <input
+            type="text"
+            id="machineUseManual"
+            name="machineUseManual"
+            class="field-control hidden"
+            placeholder="Enter machine name manually"
+            maxlength="150"
+            aria-labelledby="label-machineUse"
+            aria-required="true"
+          />
+          <div id="reviewMachineOverrideWrap" class="review-machine-override hidden">
+            <input
+              type="text"
+              id="reviewMachineManual"
+              name="reviewMachineManual"
+              class="field-control"
+              placeholder="Optional: type specific Dana machine name (leave blank for Other / Unclassified)"
+              maxlength="150"
+              aria-label="Optional manual machine name for Dana Other / Unclassified review entry"
+            />
+          </div>
+          <div class="field-error" id="error-machineUse"></div>
+        </div>
+
+        <!-- Dana "Other / Unclassified" Review Path Banner -->
+        <div id="danaReviewBar" class="review-bar col-span-12 hidden" role="region" aria-label="Dana Other / Unclassified review options">
+          <span id="danaReviewText">
+            <strong>Review Group (7 preserved records):</strong> Pick from the 7 preserved items below, or switch to manual entry for an unclassified Dana item.
+          </span>
+          <button type="button" id="danaReviewToggleBtn" class="review-toggle-btn">
+            Enter Manually (Review)
+          </button>
         </div>
 
         <!-- 3. Item Name (सामान) -->
         <div class="field-group col-span-8" data-field="itemName">
-          <label class="field-label" for="itemName">
+          <label class="field-label" id="label-itemName" for="itemNameTrigger">
             <span class="label-left">
               <span class="field-num">3</span>
-              <span>Item Name <span class="hindi-label">(सामान)</span></span>
+              <span>Item Name <span class="hindi-label">(सामान)</span><span class="req-star" aria-hidden="true">*</span></span>
             </span>
+            <span id="itemModeBadge" class="field-mode-badge hidden">Manual Entry</span>
           </label>
+          <div id="itemNameDropdown" class="ss-wrapper"></div>
           <input
             type="text"
-            id="itemName"
-            name="itemName"
-            class="field-control"
-            placeholder="e.g., Bearing 6205, Packaging Roll, Lubricant Oil"
-            maxlength="150"
+            id="itemNameManual"
+            name="itemNameManual"
+            class="field-control hidden"
+            placeholder="Enter item name manually"
+            maxlength="200"
+            aria-labelledby="label-itemName"
+            aria-required="true"
           />
+          <div class="field-hint hidden" id="hint-itemName"></div>
           <div class="field-error" id="error-itemName"></div>
         </div>
 
@@ -803,11 +1192,28 @@
           <div class="field-error" id="error-qty"></div>
         </div>
 
-        <!-- 5. Out Time (समय) -->
+        <!-- 5. Date (दिनांक) -->
+        <div class="field-group col-span-6" data-field="date">
+          <label class="field-label" for="entryDate">
+            <span class="label-left">
+              <span class="field-num">5</span>
+              <span>Date <span class="hindi-label">(दिनांक)</span></span>
+            </span>
+          </label>
+          <input
+            type="date"
+            id="entryDate"
+            name="date"
+            class="field-control"
+          />
+          <div class="field-error" id="error-date"></div>
+        </div>
+
+        <!-- 6. Out Time (समय) -->
         <div class="field-group col-span-6" data-field="outTime">
           <label class="field-label" for="outTime">
             <span class="label-left">
-              <span class="field-num">5</span>
+              <span class="field-num">6</span>
               <span>Out Time <span class="hindi-label">(समय)</span></span>
             </span>
           </label>
@@ -820,11 +1226,11 @@
           <div class="field-error" id="error-outTime"></div>
         </div>
 
-        <!-- 6. Given To (किसको दिया) -->
+        <!-- 7. Given To (किसको दिया) -->
         <div class="field-group col-span-6" data-field="givenTo">
           <label class="field-label" for="givenTo">
             <span class="label-left">
-              <span class="field-num">6</span>
+              <span class="field-num">7</span>
               <span>Given To <span class="hindi-label">(किसको दिया)</span></span>
             </span>
           </label>
@@ -839,11 +1245,11 @@
           <div class="field-error" id="error-givenTo"></div>
         </div>
 
-        <!-- 7. Issued By (जारीकर्ता) -->
-        <div class="field-group col-span-12" data-field="issuedBy">
+        <!-- 8. Issued By (जारीकर्ता) -->
+        <div class="field-group col-span-6" data-field="issuedBy">
           <label class="field-label" for="issuedBy">
             <span class="label-left">
-              <span class="field-num">7</span>
+              <span class="field-num">8</span>
               <span>Issued By <span class="hindi-label">(जारीकर्ता)</span></span>
             </span>
           </label>
@@ -858,11 +1264,11 @@
           <div class="field-error" id="error-issuedBy"></div>
         </div>
 
-        <!-- 8. Purpose / Remarks (काम / टिप्पणी) -->
+        <!-- 9. Purpose / Remarks (काम / टिप्पणी) -->
         <div class="field-group col-span-12" data-field="remarks">
           <label class="field-label" for="remarks">
             <span class="label-left">
-              <span class="field-num">8</span>
+              <span class="field-num">9</span>
               <span>Purpose / Remarks <span class="hindi-label">(काम / टिप्पणी)</span></span>
             </span>
           </label>
@@ -872,12 +1278,23 @@
             class="field-control"
             rows="3"
             maxlength="400"
-            placeholder="Machine name, work order, or reason for material issue..."
+            placeholder="Machine details, work order, or reason for material issue..."
           ></textarea>
           <div class="field-error" id="error-remarks"></div>
         </div>
 
       </div>
+
+      <!-- PENDING / FAILED QUEUE TRACKER (Visible only when unconfirmed entries exist) -->
+      <section id="queuePanel" class="queue-panel hidden" aria-label="Pending submission queue">
+        <div class="queue-panel-header">
+          <span id="queuePanelTitle" class="queue-panel-title">Pending Unconfirmed Entries</span>
+          <button type="button" id="retryQueueAllBtn" class="sync-now-btn">
+            <span>Retry Pending Now</span>
+          </button>
+        </div>
+        <ul id="queueList" class="queue-list"></ul>
+      </section>
 
       <!-- FORM ACTION BUTTONS -->
       <div class="form-actions">
@@ -892,6 +1309,7 @@
         </button>
 
         <button type="submit" id="submitBtn" class="btn btn-primary">
+          <span class="btn-spinner" aria-hidden="true"></span>
           <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M22 2L11 13"></path>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -902,8 +1320,8 @@
     </form>
 
     <footer class="register-footer">
-      <span>DUSAD AGROFOOD PVT LTD &mdash; Store MIS</span>
-      <span>Instant Background Sync Enabled</span>
+      <span>DUSAD AGROFOOD PVT. LTD. &mdash; Store MIS</span>
+      <span>Embedded Item Master &bull; Offline-Ready Dropdowns</span>
     </footer>
   </main>
 
@@ -911,30 +1329,1788 @@
     "use strict";
 
     /* ========================================================================
-       1. CONFIGURATION (GOOGLE APPS SCRIPT URL & DEPARTMENTS)
+       1. REGISTER SUBMISSION BACKEND URL (SAVING ONLY — NO MASTER SHEET API)
        ======================================================================== */
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwe8F4BbCM7QJ1dw3lDotSXP7NAiGbCFErwbMIk4Ql1409k6nUr5AHlyxxB3wiw-D6RqQ/exec";
-
-    const DEPARTMENTS = [
-      "Dana",
-      "Kachri",
-      "Tukdi",
-      "Groundnut",
-      "Saini Warehouse",
-      "Office / Admin"
-    ];
-
-    const QUEUE_STORAGE_KEY = "dusad_store_out_sync_queue_v1";
-    const REQUEST_TIMEOUT_MS = 12000;
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-rMBRxbsuSy1eDSx-ftvToiVF1GMx8UC5R3eRcr3S9RxdgOvSf3JLzT13cWcBkhUoqA/exec";
 
     /* ========================================================================
-       2. DOM REFERENCES & APPLICATION STATE
+       2. AUTHORITATIVE 7 DEPARTMENTS & COMPLETE EMBEDDED ITEM MASTER
+          Source: DUSAD_AGROFOOD_SUPER_MASTER_PROMPT_CORRECTED_2.md
+          Total records preserved verbatim: 1,111
+            - 6 Predefined Departments in ITEM_MASTER: 957 records
+              (DN: 224 | BDN: 52 | GN: 193 | KC: 56 | TD: 290 | SN: 142)
+            - Outer (General) reference-only list: 154 records (manual UI only)
+       ======================================================================== */
+    const DEPARTMENTS = Object.freeze([
+      Object.freeze({ code: "DN", label: "Dana", manual: false }),
+      Object.freeze({ code: "BDN", label: "Bardana", manual: false }),
+      Object.freeze({ code: "GN", label: "Groundnut", manual: false }),
+      Object.freeze({ code: "KC", label: "Kachri", manual: false }),
+      Object.freeze({ code: "TD", label: "Tukdi", manual: false }),
+      Object.freeze({ code: "SN", label: "Saini Warehouse", manual: false }),
+      Object.freeze({ code: "General", label: "Outer (General)", manual: true })
+    ]);
+
+    const DEPARTMENT_BY_CODE = Object.freeze(
+      DEPARTMENTS.reduce((acc, dept) => {
+        acc[dept.code] = dept;
+        return acc;
+      }, {})
+    );
+
+    const DANA_REVIEW_GROUP = "Other / Unclassified";
+
+    // Complete embedded Department -> Machine Use -> Item Name master (957 records)
+    const ITEM_MASTER = {
+      "DN": {
+        "code": "DN",
+        "label": "Dana",
+        "manual": false,
+        "machines": {
+          "Other / Unclassified": [
+            "AIR COMPRESSOR",
+            "AIR CYLONE",
+            "AIR CYCLONE Air Lock Motor 0.5 HP, 1430 RPM",
+            "AIR CYCLONE Chain Single Toothed Chain, Length: 50 Inch",
+            "AIR CYCLONE Chakka Single Dant (Single Toothed Sprocket) 6 Inch, Bore: 38 mm",
+            "AIR CYCLONE Cyclone Blower Motor 7.5 HP, 1450 RPM",
+            "AIR CYCLONE Gear Box"
+          ],
+          "DN AIR COMPRESSOR": [
+            "Air Filter",
+            "Air Outlet Pipe",
+            "Air Tank",
+            "Compressor Oil",
+            "Compressor Pump",
+            "Display",
+            "Dryer",
+            "Emergency Switch",
+            "Main MCB",
+            "Motor - RPM 3000 HP - 75 KWH - 55",
+            "Oil Filter",
+            "ON/OFF Switch",
+            "Pankha",
+            "RADIATOR",
+            "Separator"
+          ],
+          "DN BATAKH": [
+            "Motor 3 HP - 2876 RPM",
+            "Nut Bolt",
+            "pankhhri",
+            "motar 3 HP RPM - 2876",
+            "C ELEVATORS",
+            "DESTONER"
+          ],
+          "DN C ELEVATORS": [
+            "Air Lock Motor 0.5 HP, 1430 RPM",
+            "Chain Single Toothed Chain, Length: 50 Inch",
+            "Chakka Single Dant (Single Toothed Sprocket) 6 Inch, Bore: 38 mm",
+            "Cyclone Blower Motor 7.5 HP, 1450 RPM",
+            "Gear Box"
+          ],
+          "DN DESTONER": [
+            "2.5 SUT 1 INCH",
+            "2 SUT 1.5 INCH",
+            "3 SUT 1 INCH",
+            "Bearing P210",
+            "Blower ka Shaft (Blower Shaft) Length: 63 Inch, Thickness: 2 Inch",
+            "Blower Motor 1450 RPM 5.5 HP",
+            "Blower Motor Puller 5 Inch Triple Belt, B Groove, Bore: 35 mm",
+            "Blower Pankha (Fan)",
+            "Blower Shaft Pulley 5 Inch",
+            "Bolt 4 Sut me 2 Inch",
+            "Break Motor (Deck Motor) 2 HP, 925 RPM",
+            "Deck ka Shaft (Deck Shaft) Length: 65 Inch",
+            "Deck Motor Pulley Variation Pulley 4 Inch",
+            "Deck Shaft Pulley 6 Inch Single Belt, B Groove, 1 Inch Bore",
+            "Eshwar Washer 4 Inch Round (Golai) 1 INCH BOR",
+            "Jali (Mesh) 4/6",
+            "Jam Patti Length: 12 Inch, Width: 2 Inch, Thickness: 6 mm",
+            "Kapda (Cloth) Dana wali Spectrum ki Jali",
+            "Pedestal UCP 211-48",
+            "Santri ka Bearing URB 62306",
+            "Santri Sariya (Eccentric Rod) Length: 28 Inch, Thickness: 16 mm",
+            "Spring Rod 12 Inch 5 Sut me",
+            "V-Belt B56",
+            "V-Belt B62"
+          ],
+          "DN DESTONER SPECTRUM": [
+            "BEARING (SANTRY BEARING URB 62306)",
+            "JUMP PATTY (JUMP PATTL L 12\", W. 2\", MO. 5MM)",
+            "MOTOR (MOTOR 1A-0.75KW (2HP) 925 RPM)",
+            "MOTOR (MOTOR 1B-5.5 HP 1450 RPM)",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 1.5\")",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 2 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 2 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 3\")",
+            "OTHERS (FAN / ADAPTER SLEEVE HE 311)",
+            "OTHERS (SANTRY SARIA L 28\", MO. 19MM)",
+            "PADISAL & BEARING (DUCK SHAFT PADISAL UK 210 TAPER)",
+            "PADISAL & BEARING (PANKHA SHAFT PADISAL UCP P 211)",
+            "PULLY (MOTOR SPRING-PULLY 4\" X 1)",
+            "PULLY (PANKHA(FAN) PULLY B 5.5\" X 3)",
+            "PULLY (SHAFT PULLY B 6\" X 1)",
+            "RUBBER WASHER (RUBBER WASHER MO. 4\", BOR 1\")",
+            "SPRING BOLT (SPRING BOLTL 12\", MO. 16MM)",
+            "SPRING (SPRING L 5\")"
+          ],
+          "DN DRYER": [
+            "Activated Carbon Filter",
+            "Air Compressor",
+            "Air Receiver Tank",
+            "Coalescing Filter",
+            "Cooling Fan",
+            "Digital Display",
+            "Electrical Contactor",
+            "MCB",
+            "Non Return Valve (NRV)",
+            "Oxygen Flow Meter",
+            "Oxygen Outlet Valve",
+            "Oxygen Purity Sensor",
+            "PLC Controller",
+            "Pre Filter (5 Micron)",
+            "Pressure Gauge",
+            "Pressure Regulator",
+            "Pressure Sensor",
+            "PSA Tower (Zeolite Bed)",
+            "PU Pipe & Fittings",
+            "Refrigerated Air Dryer",
+            "Relay",
+            "Safety Relief Valve",
+            "Solenoid Valve",
+            "Wiring Harness",
+            "Zeolite Molecular Sieve",
+            "GRAVITY",
+            "GR 2.5 Sut 1 Inch",
+            "GR 2 Sut ke 1 Inch",
+            "GR 3 Sut ke 1 Inch,",
+            "GR 4 SUT 1 INCH",
+            "GR Bearing P210",
+            "GR Blower ka Shaft Length: 9.3 Feet, Thickness: 2 Inch",
+            "GR Blower Motor 5.5 HP, 1450 RPM",
+            "GR Blower Motor M Puller 5 Inch Triple Belt, B Groove, Bore: 40 mm",
+            "GR Blower Pankha (Fan)",
+            "GR Blower Shaft Pulley 5.5 Inch Triple Belt, B Groove, Bore: 2 Inch",
+            "GR Bolt 4 Sut ke 1 Inch,",
+            "GR Deck ka Shaft Length: 112 Inch, Thickness: 2 Inch",
+            "GR Deck Motor 2 HP, 925 RPM",
+            "GR Deck Motor Pulley 3.5 Inch Single Belt, B Groove, Bore: 25 mm",
+            "GR Deck Shaft Pulley 6 Inch Single Belt, B Groove, 1 Inch Bore",
+            "GR Jali (Screen Mesh) 10/5 Spectrum Jali",
+            "GR Jam Patti Length: 12 Inch, Width: 50 mm, Thickness: 6 mm",
+            "GR Kapda (Cloth) Red Clesh",
+            "GR Pedestal UCP-211-32",
+            "GR RABAR Washer 4 Inch Round (Golai)",
+            "GR Santri ka Bearing URB 62306",
+            "GR Santri Sariya (Eccentric Rod) Length: 28 Inch, Thickness: 16 mm",
+            "GR Spring Rod Length: 12 Inch, 5 Sut (Half Churi)",
+            "GR V-Belt B62",
+            "SORTEX",
+            "SR Air Filter",
+            "SR Air Gun",
+            "SR Air Pipes 6 mm, 8 mm, 10 mm, 16 mm",
+            "SR Background Bboard",
+            "SR Background Plate",
+            "SR Camera",
+            "SR Chute / Channel",
+            "SR CMOS Sensor",
+            "SR Cooling Fan",
+            "SR Ejector",
+            "SR Ejector Pipe Dhakne Wala Cover",
+            "SR Final + Rejection Clip",
+            "SR Glass",
+            "SR HMI Screen",
+            "SR image processing board",
+            "SR injector pipe 6 mm",
+            "SR injector valve",
+            "SR LED Light",
+            "SR Main Control Board",
+            "SR Power Supply Unit (PSU)",
+            "SR Solenoid Valve (Air Controller)",
+            "SR Switch ON/OFF",
+            "SR vaibretar chip",
+            "SR Vibrator",
+            "SR Vibrator Patti (Strip)",
+            "SR Wiper",
+            "SR Wiper Rubber",
+            "UPS",
+            "Battery",
+            "Connecting Wire",
+            "Inverter Unit",
+            "X RAY MACHINE",
+            "XR AC Servo Motor 3000 RPM",
+            "XR Air Controller",
+            "XR Air Filter",
+            "XR Air Gun",
+            "XR Bada Rola Bearing SFC 205",
+            "XR Bada Rola (Big Roller) Length: 22.5 Inch, Width: 4 Inch",
+            "XR Chhota Rola Bearing 6904 C3",
+            "XR Chhota Rola (Small Roller) Length: 19 Inch 5 Sut, Thickness: 1.5 Inch",
+            "XR Connector T, L Fittings",
+            "XR Conveyor Belt Length: 11 Feet 4 Inch, Width: 17.5 Inch",
+            "XR Display",
+            "XR Emergency Switch",
+            "XR Indicator Light",
+            "XR LED Bulb",
+            "XR Motor Toothed Pulley (Dant Wali Pulley) 2.5 Inch, Bore: 18 mm",
+            "XR ON/OFF Switch",
+            "XR Pipes 6 mm, 8 mm, 10 mm, 16 mm",
+            "XR Roll Toothed Pulley (Shell Pulley) 4 Inch, Bore: 18 mm",
+            "XR Sensor",
+            "XR Sensor Lock",
+            "XR Sensor Pin",
+            "XR Siren",
+            "XR Toothed Belt (Dant Wala Belt)",
+            "XR Vibrator",
+            "XR Vibrator Clip",
+            "XR Vibrator Patti (Strip)",
+            "RECTANGULAR GRADER",
+            "SILICONE SHEET"
+          ],
+          "DN RECTANGULAR GRADER": [
+            "3.25 cepsul jali 10/4",
+            "3.50 ki cepsul jali 10/4",
+            "3.75 ki cepsul jali 10/4",
+            "3 ki cepsul jali 10/4",
+            "4.25 cepsul jali 10/4",
+            "4.50 cepsul jali 10/4",
+            "4.50 KI GOL JALI 10/4",
+            "4.75 cepsul jali 10/4",
+            "4 ki cepsul jali 10/4",
+            "4 KI GOL JALI 10/4",
+            "5.25 cepsul jali 10/4",
+            "5.50 CEPSUL JALI 10/4",
+            "5.50 KI GOL JALI",
+            "5 cepsul jali 10/4",
+            "5 GOL JALI 10/4",
+            "Chakka (Flywheel Pulley) 24 Inch, Bore Size: 2 Inch",
+            "Damru Sariya (Vibrator Rod) Thickness: 1 Inch, Length: 4.2 Feet",
+            "JALI 2.5 GOL JALI 10/4",
+            "KAPDA",
+            "Magnet 10000 Gauss",
+            "Motor 2 HP, 930 RPM",
+            "Motor Pulley 3 Inch Single Belt, B-Group, Bore Size: 28 mm",
+            "NUT BOLT WASHER 3 SUT 2 INCH",
+            "Nut, Bolt, Washer 3 SUT 3 INCH",
+            "NUT BOLT WASHER 4 SUT 2.5 INCH",
+            "Nut, Bolt, Washer 5 Sut me 3 Inch,",
+            "Os Pedestal Balancer Rod 4 Feet",
+            "Pedestal UCP 211-32",
+            "Santri (Eccentric Bearing) UCT 211-32",
+            "Shaft Length: 33 Inch, Thickness: 2 Inch",
+            "Side Bearing 6307",
+            "V-Belt B-95"
+          ],
+          "DN SILICONE SHEET": [
+            "SILICONE SHEET moti wali",
+            "SILICONE SHEET PATLI WALI"
+          ]
+        }
+      },
+      "BDN": {
+        "code": "BDN",
+        "label": "Bardana",
+        "manual": false,
+        "machines": {
+          "BDN SILAI MACHINE": [
+            "SILAI MACHINE",
+            "11254",
+            "15442 K",
+            "29066 L",
+            "29774 D",
+            "36 E",
+            "6038 K",
+            "6039 K",
+            "80233",
+            "80234 B",
+            "80273",
+            "80273 A",
+            "80292",
+            "80617",
+            "80638 A",
+            "80640 A",
+            "80645",
+            "80650",
+            "80652",
+            "80654",
+            "80666 B",
+            "80694",
+            "80696 W/N",
+            "81203",
+            "81205",
+            "81207",
+            "81208",
+            "81211",
+            "81213",
+            "81213 A",
+            "81220 A",
+            "81220 D",
+            "81224 W/W (Black me)",
+            "81237",
+            "81238",
+            "81240",
+            "81240 A",
+            "81241 W/N",
+            "81250 G",
+            "81251 A",
+            "81255",
+            "81388 R",
+            "All screw",
+            "HA 1286",
+            "HA 23",
+            "HA 43 X",
+            "HA 54 A",
+            "HS 106 SET",
+            "HS 109 B",
+            "HS 15 A",
+            "ORGAN 32 No.",
+            "Rafu Silai Suye"
+          ]
+        }
+      },
+      "GN": {
+        "code": "GN",
+        "label": "Groundnut",
+        "manual": false,
+        "machines": {
+          "GN CONVER BELT": [
+            "BERING (3204Z)",
+            "BERING(3205Z)",
+            "GEAR BOC PULLY CHABI 10 MM",
+            "GEAR box ( G20:1)",
+            "GEAR BOX PULI (DOUBLE BELT) 4INCH 38 MM BOR SIZE",
+            "GEAR BOX PULI (DOUBLE BELT) (6 inch, 32 mm BOR SIZE)",
+            "MOTAR 1 ( 7.5 HP , 960 RPM)",
+            "MOTAR 2 (7.5HP, 960 RPM)",
+            "MOTAR 3 (5 HP, 960 RPM)",
+            "MOTAR PULI C GROUP (DOUBLE BELT) (4 inch, 38 mm BOR SIZE)",
+            "MOTAR PULI KI CHABI C GROUP (10 mm)",
+            "NICHE KA MAIN ROLA (L'950 mm, M'300mm)",
+            "NICHE KA ROLA (L'37 inch, M'110 mm) complte",
+            "NICHE VALE ROLE KA LOCK (22 mm)",
+            "NUT BOLT 5 SUT L 2 INCH",
+            "NUT BOLT WAASAR 4 SUT 2 INCH",
+            "PATTA 1 (L'112 FOOT, C'900mm)",
+            "PATTA 2 (L'100 FOOT, C'900mm)",
+            "PATTA 3 (L'59N FOOT, C'900mm)",
+            "PATTE KA ALIAMENT MILANE VALA BOLT (8 SOOT, L'12 inch)",
+            "PEDISAL (UCP213-40)",
+            "SIDE ROLER (L'12 inch, M'90mm)",
+            "SIDE VALE ROLE KA LOCK (18 mm)"
+          ],
+          "GN DECORDICATOR": [
+            "BIT (BIT L. 33\", MO. 45 MM, W. 4.25\")",
+            "CHAIN (CHAIN DUBBLE ME L 93, W. 2.5\")",
+            "CHAKKA (CHAIN CHAKKA DUBBLE MO. 2\", W. 10\", 30-DAN)",
+            "CHAMBER PATTI (CHAMBER PATTI L 34.5\" MO. 5 MM)",
+            "CHAMBER PATTI (COUNTER SHAFT L 60\", MO. 2.5\")",
+            "CHAMBER WASHER (CHAMBER WASHER BIG 14 GAZE)",
+            "CHAMBER WASHER (CHAMBER WASHER BIG 16 GAZE)",
+            "CHAMBER WASHER (CHAMBER WASHER BIG 18 GAZE)",
+            "CHAMBER WASHER (CHAMBER WASHER BIG 20 GAZE)",
+            "CHAMBER WASHER (CHAMBER WASHER BIG 24 GAZE)",
+            "CHAMBER WASHER (CHAMBER WASHER SMALL 0.50 GAZE)",
+            "CHAMBER WASHER (CHAMBER WASHER SMALL 0.75 GAZE)",
+            "CHAMBER WASHER (CHAMBER WASHER SMALL 1.50 GAZE)",
+            "CHAMBER WASHER (CHAMBER WASHER SMALL 1 GAZE)",
+            "MOTOR (MOTOR 25 HP 975 RPM)",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 3\")",
+            "NUTS AND BOLTS (BOLT 2 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 2 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 3\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 3\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 4\")",
+            "NUTS AND BOLTS (BOLT 5 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 5 SUT X 3\")",
+            "NUTS AND BOLTS (BOLT 5 SUT X 4\")",
+            "PADISAL (UCP-208-24)",
+            "PADISAL (UCP-211-32)",
+            "PADISAL (UCP-213-40)",
+            "PULLY (COUNTER PULLY C 10\" X 3 BOR 2.5\")",
+            "PULLY (COUNTER PULLY C 20\" X 2 BOR 2.5\")",
+            "PULLY (COUNTER PULLY C 20\" X 3 BOR 2.5\")",
+            "PULLY (MAIN SHAFT PULLY 20\" X 2 BOR 2\")",
+            "PULLY (MOTOR PULLY C 6\" X 1)",
+            "PULLY (PANKHA (FAN) PULLY C 5.5\" X 2 BOR 1.5\")",
+            "PULLY (PULLY C 18\" X 2 BOR 2\")",
+            "ROUND BAR (ROUND IRON BAR(SARIA) MO. 8 MM, L 45\" X)",
+            "SHAFT (FANPANKHA SHAFT L 55\" MO. 1.5\")",
+            "SHAFT (OPNER SHAFT L 62' MO. 2\")",
+            "V-BELT (C 136 FAN BELT)",
+            "V-BELT (C 230 BELT)",
+            "V-BELT (C 98 COUNTER BELT)",
+            "WHEELS (BALANCE WHEEL 21.5\", MO. 3\", BOR 2\")"
+          ],
+          "GN DESTONER": [
+            "BALANCE PATTI AAGE KI (L'420 mm)",
+            "BALANCE PATTI BERING (6204Z)",
+            "BALANCE PATTI PICHE KI (L'205 mm)",
+            "BALANCE PATTI PIN (L'2 inch)",
+            "BALANCER ROD (L'240 mm)",
+            "BLOWER MOTAR (10 HP, 2010 RPM)",
+            "BLOWER M PULAR (ROUND 400 mm, C'130 mm, BOR SIZE 38 mm, CHABI 10 mm)",
+            "HOUGING BERING (2308Z)",
+            "JALI (C'2.5 FOOT, L'5 FOOT 2 inch)",
+            "MOTAR (2 HP, 1430 RPM)",
+            "MOTAR PULLE B GROUP (SINGLE BELT) (4.5 inch, BOR SIZE 24 mm)",
+            "MOTAR PULLI B GROUP CHABI (8 mm)",
+            "NUT BOLT VAASAR (2 SOOT, L'2 inch)",
+            "NUT BOLT VAASAR (3 SOOT 1 inch)",
+            "NUT BOLT VAASAR (3 SOOT L'1.5 inch)",
+            "NUT BOLT VAASAR (4 SOOT L'2 inch)",
+            "SAFAT (L'38 inch, M'40 mm)",
+            "SAFAT PULLI B GROUP CHABI (8 mm)",
+            "SAFAT PULLI B GROUP (SINGLE BELT) (14 inch, BOR SIZE 35 mm)",
+            "SANTRI BERING (6212)",
+            "SANTRI BERING NICHE VALA (6205Z)",
+            "GRADERS 10X4",
+            "GRADERS 10 X 4 BEARING (BEARING 6307)",
+            "GRADERS 10 X 4 JALI (JALI NO. 3 LONG HOLE 10' X 4')",
+            "GRADERS 10 X 4 JALI (JALI NO. 7.5 ROUND HOLE 8' X 4')",
+            "GRADERS 10 X 4 JALI (JALI UPPER WALI NO. 08 ROUND HOLE 4' X 4')",
+            "GRADERS 10 X 4 MOTOR (MOTOR 2 HP 935 RPM)",
+            "GRADERS 10 X 4 NUTS AND BOLTS (BOLT 2.5 SUT X 1\")",
+            "GRADERS 10 X 4 NUTS AND BOLTS (BOLT 2.5 SUT X 2\")",
+            "GRADERS 10 X 4 NUTS AND BOLTS (BOLT 3 SUT X 1\")",
+            "GRADERS 10 X 4 NUTS AND BOLTS (BOLT 3 SUT X 2\")",
+            "GRADERS 10 X 4 NUTS AND BOLTS (BOLT 4 SUT X 2\")",
+            "GRADERS 10 X 4 NUTS AND BOLTS (BOLT 4 SUT X 3\")",
+            "GRADERS 10 X 4 NUTS AND BOLTS (BOLT 5 SUT X 2\")",
+            "GRADERS 10 X 4 NUTS AND BOLTS (BOLT 5 SUT X 3\")",
+            "GRADERS 10 X 4 PADISAL (UCP-211-32)",
+            "GRADERS 10 X 4 PADISAL (UCT-211-32)",
+            "GRADERS 10 X 4 PULLY (MOTOR PULLY B 3\" X 1\")",
+            "GRADERS 10 X 4 SHAFT (SANTRY SHAFT L 4 FT)",
+            "GRADERS 10 X 4 SHAFT (SHAFT L 29\", MO. 2\"INCH)",
+            "GRADERS 10 X 4 SHFAT PIN",
+            "GRADERS 10 X 4 V-BELT (B 95 BELT)",
+            "GRADERS 10 X 4 WHEELS (BALANCE WHEEL 24\" MO. 3\")"
+          ],
+          "GN ROUND CHALNA (7 FOOT)": [
+            "SAFAT (L'25 inch, M'3 inch)",
+            "ROUND CHALNA (7 FOOT) BELT (B95)",
+            "ROUND CHALNA (7 FOOT) BERING (2306K)",
+            "ROUND CHALNA (7 FOOT) BERING (UCF215-48)",
+            "ROUND CHALNA (7 FOOT) CHABI (2.5 inch, BOR SIZE 28 mm)",
+            "ROUND CHALNA (7 FOOT) CHABI - MOTAR 8 MM",
+            "ROUND CHALNA (7 FOOT) KAPLING (ROUND 8 inch, 6 HOLE 3 SOOT ME)",
+            "ROUND CHALNA (7 FOOT) MITTI JALI 4 PART ME PIMPAL VALI (2.5 KI JALI)",
+            "ROUND CHALNA (7 FOOT) MOTAR (3 HP, 1435 RPM)",
+            "ROUND CHALNA (7 FOOT) MOTAR PULI DOUBLE BELT (B GROUP) (2.5'' INCH , BOR SIZE 28 mm)",
+            "ROUND CHALNA (7 FOOT) MUNGFALI JALI 4 PART ME (7)",
+            "ROUND CHALNA (7 FOOT) NUT BOLT VAASAR (3 SOOT, L'1.5 inch)",
+            "ROUND CHALNA (7 FOOT) NUT BOLT VAASAR (3 SOOT, L'2 inch)",
+            "ROUND CHALNA (7 FOOT) NUT BOLT VAASAR (3 SOOT, L'3 inch)",
+            "ROUND CHALNA (7 FOOT) NUT BOLT VAASAR (4 SOOT, L'2 inch)",
+            "ROUND CHALNA (7 FOOT) SAFAT PULI DOUBLE BELT (B GROUP) (14 inch, BOR SIZE 3 inch)"
+          ],
+          "GN ROUND CHALNA (8 FOOT) PR": [
+            "BELT (B95)",
+            "BERING (2306K)",
+            "BERING (UCF215-48)",
+            "KAPLING (ROUND 8 inch, 6 HOLE 3 SOOT ME)",
+            "MITTI JALI 4 PART ME PIMPAL VALI (2.5 KI JALI)",
+            "MOTAR (3 HP, 1435 RPM)",
+            "MOTAR CHABI - 8 MM",
+            "MOTAR PULI DOUBLE BELT (B GROUP) (8 mm)",
+            "MOTAR PULLY DOUBLE BELT (B GROUP) 2.5''INCH , BOR SIZE 28 MM",
+            "MUNGFALI JALI 4 PART ME (7)",
+            "NUT BOLT VAASAR (3 SOOT, L'1.5 inch)",
+            "NUT BOLT VAASAR (3 SOOT, L'2 inch)",
+            "NUT BOLT VAASAR (3 SOOT, L'3 inch)",
+            "NUT BOLT VAASAR (4 SOOT, L'2 inch)",
+            "SAFAT (L'25 inch, M'3 inch)",
+            "SAFAT PULI DOUBLE BELT (B GROUP) (14 inch, BOR SIZE 3 inch)"
+          ],
+          "GN ROUND GRADER (6 FOOT) PR": [
+            "CROSS - TATA 407",
+            "GHOKOR PADISAL F 215 BIG SIZE X INCH",
+            "JALI MUKESH TRIVINI - 2 THRA KI JALI",
+            "MOTOR (MOTOR 2 HP 1415 RPM)",
+            "MOTOR (MOTOR PULLEY B 2.5\" X 1\")",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 1.5\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 0.5\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 1.5\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 3\")",
+            "PADISAL CHOKOR F- 211 / UCF-211-32",
+            "PAZAMA (PAZAMA SMALL SIZE)",
+            "ROUND GRADER BEARING 2305 k (TAPER BEARING)",
+            "ROUND GRADER (BIG PULLEY B 14\" X 1 BOR 2\") inch shaft",
+            "ROUND GRADER (BOLT 2.5 SUT X 1.5\")",
+            "V-BELT (B 74 BELT)",
+            "WATER COMPRESSER"
+          ],
+          "GN WATER CONVEYORS": [
+            "CHAIN-SPOKIT (MOTOR GEAR CHAIN SPOKIT 19 DANTA)",
+            "FANWARA (PANI FANWARA)",
+            "GEAR (PATTA SHAFT GEAR 26 DANTA)",
+            "MOTOR (MOTOR GEAR 2 HP 1420 RPM)",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 1.5\")",
+            "NUTS AND BOLTS (BOLT 2.5 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 2.5 T X 1\")",
+            "NUTS AND BOLTS (BOLT 2 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 2 SUT X 1.5\")",
+            "NUTS AND BOLTS (BOLT 2 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 1\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 1.5\")",
+            "NUTS AND BOLTS (BOLT 3 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 2\")",
+            "NUTS AND BOLTS (BOLT 4 SUT X 3\")",
+            "OTHERS (RETURN ROLLAR L 55\", MO. 3\")",
+            "OTHERS (RETURN ROLLAR SHAFT L 57\", MO. 1\")",
+            "PADISAL & BEARING (PADISAL NTN 208)",
+            "PADISAL & BEARING (PADISAL P 207)",
+            "RETURN ROLLAR L 50\", MO. 3\"",
+            "ROLLAR (LOWER PATTA ROLLAR L 62\", MO. 7\" PATTA)",
+            "ROLLAR (UPPER ROLLAR L 50\", MO. 7\" PATTA)",
+            "ROLLAR (UPPER WALA ROLLAR L 66\", MO 1.5\")",
+            "SHAFT (LOWER PATTA ROLLAR SHAFT L 66\", MO 1.5\")",
+            "SHAFT (LOWER PATTA ROLLAR SHAFT L 68\", MO 1.5\")",
+            "SHAFT (RETURN ROLLAR SHAFT L 62\", MO. 1\")",
+            "SHAFT(UPPER SHAFT L 56\", MO. 1.5\" PATTA)",
+            "SHAFT (UPPER SHAFT L 74\", MO 1.5\")",
+            "VALVE (VALVE 0.75\")"
+          ]
+        }
+      },
+      "KC": {
+        "code": "KC",
+        "label": "Kachri",
+        "manual": false,
+        "machines": {
+          "kc Chhota Chalna": [
+            "Load Wheel 22 inch, Width 3 inch, Bore 2 inch",
+            "Motor 3 HP, 960 RPM, 3 inch Pulley Double Belt B-Groove, Bore 28 mm",
+            "Pedestal P-211",
+            "Santri Bearing P-211",
+            "Santri Rod 30 inch",
+            "Shaft Thickness 2 inch, Length 27 inch",
+            "Side Bearing 6205",
+            "V-Belt B-95"
+          ],
+          "Kc Chinese Z": [
+            "Chain Guide Rod 10 mm",
+            "Damru 16 inch",
+            "Gear garari 4.5 inch (26 Teeth Single), Bore 30 mm",
+            "Guide Plate Length 3 ft, Width 30 mm, Thickness 6 mm",
+            "Motor 1.5 HP, 1405 RPM ( 0.75 / 0.8 HP)",
+            "Nali 5 inch Length",
+            "niche ki garari 38 Teeth",
+            "Slide Bearing P-205",
+            "Top Bearing 1205",
+            "Top Guide Plate Thickness 10 mm, Width 2 inch",
+            "Z garari 9 inch, 55 Teeth, Bore 25 mm",
+            "Z Plate Length 17 inch, Width 3.5 inch, Thickness 10 mm"
+          ],
+          "Kc Desi Grader": [
+            "Chinese Bed Side Boring P-205",
+            "Counter Shaft Length 14 inch, Thickness 1 inch",
+            "Jali 3.5",
+            "Motor 1.5 HP, 960 RPM",
+            "Motor Pulley 2.5 inch, Double Belt B-Group",
+            "Pedestal P-211 (Belt B-55)",
+            "Santri Bearing HB-210",
+            "Santri Rod 10 inch",
+            "Shaft Pulley 10 inch, Single Belt B-Group, Bore 25 mm",
+            "Vibrator Plate (Bottom) Length 2 ft 3 inch, Width 12 Gauge"
+          ],
+          "Kc elimeter": [
+            "Bottom Bearing P-211",
+            "Bottom Shaft Length 30 inch, Thickness 2 inch",
+            "Chain chakka katori 8 inch Length, 4 inch Width",
+            "Desi Pedestal S-511",
+            "Motor 3 HP, 960 RPM, Motor Pulley 3.5 inch Double Belt B-Group",
+            "Shaft Pulley 24 inch, Double Belt B-Group",
+            "Top Shaft 35 inch Length, 50 mm Thickness"
+          ],
+          "KC FAN": [
+            "chembar Plate 4 Feet",
+            "Counter Pulley 18 inch, Triple belt , Bore 50 mm",
+            "Counter Shaft Length 38 inch, Thickness 50 mm",
+            "Desi Pedestal S-509 Pully 20 inch singal bely b group bore 50 mm",
+            "Desi Pedestal S-511 / Belt C-108, Belt C-215",
+            "Fan Shaft Length 63 inch, Thickness 38 mm",
+            "Motor 15 HP, 970 RPM",
+            "Pulley 24 inch, Triple Belt C-Group, Bore 50 mm",
+            "Pulley 5 inch, C-Group Triple belt , Bore 42 mm",
+            "Pulley 8 inch, Triple, Bore 50 mm",
+            "Shaft Length 73 inch, Thickness 50 mm"
+          ],
+          "Kc Grader Chalna": [
+            "Load Wheel 23 inch, Width 3.5 inch, Bore 28 mm",
+            "Motor 3 HP, 960 RPM",
+            "Motor Pulley 3 inch, Single Belt B-Groove, Bore 2 inch",
+            "Pedestal P-211",
+            "Santri Bearing P-211",
+            "Santri Rod Length 45 inch",
+            "Shaft Length 33 inch",
+            "Side Bearing 6307"
+          ]
+        }
+      },
+      "TD": {
+        "code": "TD",
+        "label": "Tukdi",
+        "manual": false,
+        "machines": {
+          "TD AIR CYCLONE": [
+            "Airlock Motor 1 HP, 1410 RPM",
+            "Airlock Motor Pulley 4 Inch Single Toothed, Bore: 25 mm",
+            "Chain 10 B",
+            "Gearbox",
+            "Main Motor 10 HP, 2925 RPM"
+          ],
+          "TD BELT CONVEYOR": [
+            "Bearing F205",
+            "Chain 3 Feet Length, Single Toothed 0.5 Inch",
+            "Conveyor Belt Length: 36 Feet, Width: 600 mm",
+            "Conveyor Motor 1 HP, 1440 RPM",
+            "Cyclone Motor 1.5 HP, 2840 RPM",
+            "Gear Box",
+            "Pulley 3 Inch, Bore: 1 Inch"
+          ],
+          "TD BELT SORTEX": [
+            "MACHINE AC Servo Motor 2 HP, 2000 RPM",
+            "MACHINE Air Filter",
+            "MACHINE Air Gun",
+            "MACHINE Background Board",
+            "MACHINE Background Plate",
+            "MACHINE Camera",
+            "MACHINE CMOS Sensor",
+            "MACHINE Cooling Fan",
+            "MACHINE Drive Model ASD-B2-1521-B",
+            "MACHINE Ejector",
+            "MACHINE Ejector Pipe 6 mm",
+            "MACHINE Ejector Valve",
+            "MACHINE Glass",
+            "MACHINE HMI Screen",
+            "MACHINE Image Processing Board",
+            "MACHINE LED Light",
+            "MACHINE Main Control Board",
+            "MACHINE Mota Roller (Thick Roller) Length: 4 Feet 2 Inch, Thickness: 4 Inch",
+            "MACHINE Motor Pulley Belt 334L",
+            "MACHINE Motor Toothed Pulley 2.5 Inch, Bore: 20 mm",
+            "MACHINE Niche Wala Belt (Bottom Belt) Width: 4 Feet 0.5 Inch, Length: 13 Feet 5 Inch",
+            "MACHINE ON/OFF Switch",
+            "MACHINE Patla Roller (Thin Roller) Length: 4 Feet 2 Inch, Thickness: 2 Inch",
+            "MACHINE Pedestal Round FC205",
+            "MACHINE Pedestal Triangle FB204",
+            "MACHINE Pipe 10 mm",
+            "MACHINE Pipe 16 mm",
+            "MACHINE Pipe 6 mm",
+            "MACHINE Pipe 8 mm",
+            "MACHINE Power Supply Unit (PSU)",
+            "MACHINE Shaft Pulley 7 Inch, Bore: 24 mm",
+            "MACHINE Solenoid Valve / Air Controller",
+            "MACHINE Upar Wala Belt (Top Belt) Width: 4 Feet 1 Inch Length 11 Inch",
+            "MACHINE Vibrator",
+            "MACHINE Vibrator Clip",
+            "MACHINE Vibrator Strip / Patti",
+            "MACHINE Wiper",
+            "MACHINE Wiper Rubber"
+          ],
+          "TD BLEACHER": [
+            "MACHINE Bearing Block UCFL 204",
+            "MACHINE Bearing FL-204",
+            "MACHINE Drive",
+            "MACHINE Fiber Sheet",
+            "MACHINE MCB Switch",
+            "MACHINE Motor 1 HP, 1400 RPM",
+            "MACHINE Pulley 2.5 Inch",
+            "MACHINE Pully 2 Inch",
+            "MACHINE Pully 3 Inch",
+            "MACHINE Regmaal (Emery Paper)",
+            "MACHINE Roller Length: 22 Inch, Thickness: 3 Inch",
+            "MACHINE V-Belt A-19",
+            "MACHINE V-Belt A-20"
+          ],
+          "TD C ELEVATORS": [
+            "Bottom Fiber Guide",
+            "Bottom Shaft 720 mm",
+            "Bucket 4 Liters Capacity",
+            "Chkka 24 Teeth",
+            "Chkka Bearing 6206",
+            "Clutch Set 35 mm Bore",
+            "Flange Bearing F - 208",
+            "Gear garari 3 Inch - 16 Teeth",
+            "Nut Bolt",
+            "Shaft 570 mm",
+            "Slide Bearing T - 208",
+            "Top Fiber Guide",
+            "Top Shaft 810 mm"
+          ],
+          "TD CHALNA BLOWER": [
+            "Blades / Impeller (Patti) 13 Pcs",
+            "Blower Motor 3 HP, 1410 RPM",
+            "Cyclone Motor 1.5 HP, 2840 RPM",
+            "M puller Bor 28 mm",
+            "M Puller / Pulling 18 Inch x 145",
+            "Nut / Bolt"
+          ],
+          "TD CHALNA GRADER": [
+            "8 PCS Chokor Jali Weidght 3 FT Length 8 FT",
+            "BALANCER ROAD Length: 34 Inch",
+            "Jali 2.50 Goal Jali Weight 4 FT Length 10 FT",
+            "Jali 2.50 Kapsool Jali Weidght 3 FT Length 8 FT",
+            "Jali 3.25 Kapsool Jali Weidght 3 FT Length 8 FT",
+            "Jali 3.50 Kapsool Jali Weidght 3 FT Length 8 FT",
+            "Jali 3 Goal Jali Weight 4 FT Length 10 FT",
+            "Jali 3 Kapsool Jali Weidght 3 FT Length 8 FT",
+            "Jali 4.50 Goal Jali Weight 4 FT Length 10 FT",
+            "Jali 4 Goal Jali Weight 4 FT Length 10 FT",
+            "Jali 5 Goal Jali Weight 4 FT Length 10 FT",
+            "Load Wheel Length: 24 Inch, Width: 4 Inch",
+            "Motor Pulley 3 Inch, Bore: 28 mm, B Group",
+            "Pedestal P211",
+            "Pedisal T211",
+            "Shaft Length: 33 Inch, Thickness: 50 mm",
+            "Side Bearing 6307",
+            "V-Belt B-95"
+          ],
+          "TD CHALNA KE PICHHE WALA FAN": [
+            "Fan Pulley 4 Inch Single Belt, B Group",
+            "Fan Shaft Length: 42 Inch, Thickness: 50 mm",
+            "Motor 3 HP, 945 RPM",
+            "Motor Pulley 4 Inch Single Belt, Bore: 28 mm",
+            "Nut / Bolt",
+            "Pedestal P211",
+            "Shaft Length: 42 Inch",
+            "V-Belt B68",
+            "CHHILKA UDANE WALI MACHINE (DEHUSKER MACHINE)",
+            "CHHILKA UDANE WALI MACHINE (DE-HUSKER MACHINE) Badi Fan Pulley (Big Fan Pulley) 14 Inch, Bore: 1 Inch",
+            "CHHILKA UDANE WALI MACHINE (DE-HUSKER MACHINE) Fan Pulley 5 Inch Single Belt, Bore: 1 Inch",
+            "CHHILKA UDANE WALI MACHINE (DE-HUSKER MACHINE) Motor 1.5 HP, 1440 RPM",
+            "CHHILKA UDANE WALI MACHINE (DE-HUSKER MACHINE) Motor Pulley 3 Inch, Bore: 25 mm",
+            "CHHILKA UDANE WALI MACHINE (DE-HUSKER MACHINE) Pedestal P205",
+            "CHHILKA UDANE WALI MACHINE (DE-HUSKER MACHINE) V-Belt B46",
+            "CHHILKA UDANE WALI MACHINE (DE-HUSKER MACHINE) V-Belt B65"
+          ],
+          "TD COOLING BLOWER": [
+            "Motor 10 hp 1450 rpm kw 7.5",
+            "Nut Bolt",
+            "pankhhri"
+          ],
+          "TD COOLING TABLE": [
+            "jali 2\" Round 4/10"
+          ],
+          "TD DANA CUTTING": [
+            "Gear Box",
+            "MOTER 1 HP, 1400 RPM",
+            "ON / OFF Starter Switch"
+          ],
+          "TD DESI GRADER": [
+            "Grader Motor 1.5 HP, 935 RPM",
+            "Grader Motor Pulley 10 Inch Single Belt, B Group, Bore: 25 mm",
+            "Grader Pulley 7 Inch Single Belt, B Group, Bore: 38 mm",
+            "Greader Motor Pully 3 Inch",
+            "Motor 2 HP, 935 RPM",
+            "Motor Pulley 3 Inch Single Belt, Bore: 25 mm",
+            "Pedisal P205",
+            "Pedisal P208",
+            "Roller Length: 25 Feet, Thickness: 8.5 Inch",
+            "Santri Bearing HA 210",
+            "V-Belt B52",
+            "V-Belt B58"
+          ],
+          "TD NAKU FAN": [
+            "Fan Blade Shaft (Pankhudi Shaft) Length: 42 Inch, Thickness: 38 mm",
+            "Fan Pulley 4.5 Inch, Bore: 38 mm",
+            "Motor 2 HP, 935 RPM",
+            "Motor Pulley 4 Inch Single Belt, B Group, Bore: 28 mm",
+            "Pedestal P208",
+            "V-Belt B54"
+          ],
+          "TD ROASTER": [
+            "AC Contractor (Delux Brannd) CJX2 Series",
+            "Chain 64 Inch Length, Single 1 Inch Thikness",
+            "CNC/VMC SWITCH",
+            "Electrical Relay Larsen & Toubro (L&T), Model: MKGP240A (Salzer Company)",
+            "Emergency Switch",
+            "Flange Bearing 511",
+            "Gear Box",
+            "Gearbox Toothed Pulley 3 Inch, Bore: 38 mm",
+            "Handle",
+            "Handle Pin",
+            "Heating Insulation Cotton (Rui)",
+            "Heating Meter",
+            "Heating Rod",
+            "Industrial Tower Light",
+            "Input Gala",
+            "Jali (Round Mesh) 2.5 ka Gol Jali",
+            "Large Chain Sprocket (Bada Chain Chakka) 6 Inch, Single Toothed, Bore: 1.5 Inch",
+            "Load Sprocket (Load Chakka) 5 Inch, Bore: 1.5 Inch",
+            "Lock Spring",
+            "MCB DU100",
+            "Motor 1.5 HP, 1440 RPM",
+            "Nut / Bolt",
+            "Output Gala",
+            "Output Gate Hinge (Kabja) 3 Inch",
+            "Panel Box",
+            "Pilot Lights",
+            "Power Contactor (Larsen Company ) Model no. - ML4",
+            "Rotary Selector Switch",
+            "Shaft Length: 7 Feet, Thickness: 2 Inch",
+            "Siren",
+            "Tamba Patti (Copper Strip)",
+            "Thermocouple Temp Sensor",
+            "Timing Meter",
+            "VFD (Variable Frequency Drive)",
+            "Vibrator",
+            "Wire"
+          ],
+          "TD ROLLA ( black Dana fodne wala )": [
+            "Feeding Hopper Clip",
+            "Jam Roller Lock Sheet",
+            "MCB Switch",
+            "Motor 2 HP, 935 RPM",
+            "Motor Pulley 2.5 Inch Double Belt, B Group, Bore: 27 mm",
+            "Nut / Bolt",
+            "Pedestal P211",
+            "Roller Length: 3 Feet, Thickness: 8 Inch",
+            "Roller Pulley 12 Inch Double Belt, c Group, Bore: 2 Inch",
+            "V-Belt C70"
+          ],
+          "TD ROLLA CUTTER ( 2 PCS )": [
+            "Araldite Adhesive",
+            "Jam Roller Lock Sheet",
+            "Motor 2 HP, 940 RPM",
+            "Motor Pulley 4 Inch Double Belt, B Group, Bore: 27 mm",
+            "Nut / Bolt",
+            "Pedestal P209",
+            "Rolla Length: 3 Feet, Thickness: 7.5 Inch",
+            "Roll Pulley 12 Inch Double Belt, Bore: 45 mm",
+            "Rubber Sheet",
+            "V-Belt B63"
+          ],
+          "TD ROLLA CUTTER ( 8 PCS )": [
+            "Motor 3 HP, 935 RPM",
+            "Motor Pulley 4 Inch, Bore: 27 mm",
+            "Pedesal P208",
+            "Roller Length: 24 Inch, Thickness: 8.5 Inch",
+            "Roller Pulley 12 INCH Double B Group, Bore: 1.5 Inch",
+            "Roller Toothed Pulley 9 Inch, Bore: 1.5 Inch",
+            "V-Belt B84"
+          ],
+          "TD SORTEX": [
+            "Air Filter",
+            "Air Gun",
+            "Air pipe 10 mm",
+            "Air pipe 12 mm",
+            "Air pipe 16 mm",
+            "Air Pipe 6 mm",
+            "Air pipe 8 mm",
+            "Background Board",
+            "Background Plate",
+            "Camera",
+            "Chute / Channel",
+            "CMOS Sensor",
+            "Cooling Fan",
+            "Ejector",
+            "Ejector Pipe - 6 mm",
+            "Ejector Pipe Cover",
+            "Ejector Valve",
+            "Emergency Switch",
+            "Glass",
+            "HMI Touch Screen",
+            "Image Processing Board",
+            "LED Bulb / Lighting",
+            "Main Control Board",
+            "ON/OFF Switch",
+            "Power Supply Unit (PSU)",
+            "Solenoid Valve / Air Controller",
+            "Vibrator",
+            "Vibrator Clip",
+            "Vibrator Strip / Patti",
+            "Wiper",
+            "Wiper Rubber"
+          ],
+          "TD STRAPPING": [
+            "Feed Switch",
+            "Nylon Strap / Dhaga",
+            "ON/OFF Switch",
+            "Reset Switch",
+            "Volume Switch"
+          ],
+          "TD UPS": [
+            "Battery",
+            "Connecting Wire",
+            "Inverter Unit"
+          ],
+          "TD VACUUM": [
+            "MACHIE Display Meter",
+            "MACHIE Emergency Switch",
+            "MACHIE Heating Patti (Heating Strip)",
+            "MACHIE L Connector",
+            "MACHIE Pressure Gauge Needle (Meter Kanta)",
+            "MACHIE Rotary Switch",
+            "MACHIE Side Rubber Sheet",
+            "MACHIE Teflon Tape",
+            "MACHIE Vacuum Pipe 8 mm"
+          ],
+          "TD VACUUM COMPRESSOR": [
+            "Compressor Wheel / Pulley (Chakka) 11 Inch, Bore: 38 mm",
+            "Hokey Tank / StrucTDre Length: 33 Inch, Thickness: 16 Inch",
+            "Motor 1 HP, 1410 RPM",
+            "Motor Pulley 5 Inch A Group Single Belt, Bore: 24 mm",
+            "Pipes 8 mm",
+            "Pressure Meter",
+            "V-Belt A52"
+          ],
+          "TD VIBRATOR CHALNA": [
+            "Damru Motor 5 HP, 1440 RPM",
+            "Jali (Screen Mesh) 2/4",
+            "Spring Length: 8 Inch, Thickness: 4 Inch Length 10 inch",
+            "X RAY",
+            "X-RAY AC Servo Motor 1 HP, 3000 RPM",
+            "X-RAY Air Controller",
+            "X-RAY Air Filter",
+            "X-RAY Air Gun",
+            "X-RAY Bada Roller Bearing SFC 205",
+            "X-RAY Bada Roller (Big Roller) Length: 22.5 Inch, Width: 4 Inch",
+            "X-RAY Belt Length: 11 Feet 8 Inch, Width: 17.5 Inch",
+            "X-RAY Chhota Roller Bearing 6904 C3",
+            "X-RAY Chhota Roller (Small Roller) Length: 19 Inch 5 Sut, Thickness: 1.5 Inch",
+            "X-RAY Display Screen",
+            "X-RAY Emergency Switch",
+            "X-RAY Indicator Light",
+            "X-RAY LED Bulb",
+            "X-RAY Motor Toothed Belt",
+            "X-RAY Motor Toothed Pulley 2.5 Inch, Bore: 18 mm",
+            "X-RAY ON/OFF Switch",
+            "X-RAY Pipe 10 mm",
+            "X-RAY Pipe 16 mm",
+            "X-RAY Pipe 6 mm",
+            "X-RAY Pipe 8 mm",
+            "X-RAY Roll Toothed Pulley 4 Inch, Bore: 18 mm",
+            "X-RAY Sensor",
+            "X-RAY Sensor Lock",
+            "X-RAY Sensor Pin",
+            "X-RAY Siren",
+            "X-RAY Vibrator Clip",
+            "X-RAY Vibrator Strip / Patti"
+          ]
+        }
+      },
+      "SN": {
+        "code": "SN",
+        "label": "Saini Warehouse",
+        "manual": false,
+        "machines": {
+          "SN Air Lock": [
+            "Fiber Glass / Round Part 5 Inch Thickness , 6 Inch Length",
+            "Gear Box",
+            "Motor 1 HP, 1440 RPM",
+            "Pulley 4 Inch, Teeth / 1 Inch Bore, 16 Teeth",
+            "SN Air Lock Pulley 11 Inch Single Belt, B-Group , Bore: 25 mm"
+          ],
+          "SN Belt Conveyor": [
+            "Bottom Roller 26 Inch Length , Roundness/Diameter: 3 Inch",
+            "Conveyor Belt 600 mm Width",
+            "Conveyor Pulley 14 Inch, B-Group Double Belt , Bore: 2 Inch",
+            "Counter Pulley 14 Inch, Double Belt B-Group , Thickness: 35 mm",
+            "Counter Shaft 30 Inch Length , Thickness: 35 mm",
+            "Motor 5 HP, 940 RPM",
+            "Motor Belt B-91",
+            "Motor Pulley 4 Inch, Double Belt B-Group , Bore: 38 mm",
+            "Pedisal P208",
+            "Pedisal P211",
+            "Roller 26 Inch Length , Thickness: 8 Inch",
+            "Side Roller 8.5 Inch Length , Roundness/Diameter: 3 Inch"
+          ],
+          "SN Blower": [
+            "Belt B-44",
+            "Belt B-75",
+            "Fan Pulley 2.5 Inch Single Belt B-Group , Bore: 38 mm",
+            "Fan Pulley 4 Inch Double Belt B-Group , Bore: 38 mm",
+            "Fan Shaft Thickness: 38 mm , Length: 40 Inch",
+            "Motor 1 HP, 1410 RPM",
+            "Motor Pulley 3 Inch B-Group Double Belt , Bore: 18 mm",
+            "Pedisal P208",
+            "Phankhi",
+            "SN Blower Motor 7.5 HP, 2906 RPM"
+          ],
+          "SN Bucket Conveyor": [
+            "Belt (Motor) B-31",
+            "Belt (Motor) B-72",
+            "Counter Pulley 5 Inch Single Belt B-Group , Bore: 38 mm",
+            "Katori 19.5 Inch Length",
+            "Motor 1.5 HP, 1440 RPM",
+            "Motor Pulley 3 Inch Single Belt B-Group , Bore: 24 mm",
+            "Patta Belt 14 Inch Width",
+            "Patta Belt 17 Inch Width",
+            "Pedisal P208",
+            "Pedisal T208",
+            "Pulley 18 Inch Single Belt B-Group , Bore: 35 mm",
+            "Roller 11 Inch Thickness, 17 Inch Length",
+            "Roller 9 Inch Thickness, 16 Inch Length",
+            "Shaft 35 mm Thickness , 25 Inch Length"
+          ],
+          "SN Burner": [
+            "Bela",
+            "Conveyor",
+            "Gear Box",
+            "Heating Meter",
+            "Keep",
+            "Kundi",
+            "Motor 0.5 HP, 1330 RPM",
+            "Motor 2 HP, 2800 RPM",
+            "NO, NE Switch"
+          ],
+          "SN Burner SN Blower": [
+            "Fan",
+            "Burner Temperature Meter",
+            "Burner Vaal"
+          ],
+          "SN Chain Conveyer": [
+            "Gear Box",
+            "Gear Pulley 12 Inch Single Belt B-Group , Bore: 24 mm",
+            "Motor 1.5 HP, 335 RPM",
+            "Motor Pulley 3 Inch Single Belt B-Group , Bore: 24 mm",
+            "Pedisal F208",
+            "Pedisal P208",
+            "Pedisal T208",
+            "Pulley Single Tooth Pulley: 5 Inch, Bore: 38 mm, 28 Teeth",
+            "Shaft 36 Inch Length , 38 mm Thickness"
+          ],
+          "SN Chakki": [
+            "Belt B-91",
+            "Belt B-92",
+            "Bush",
+            "Motor 7.5 HP, 960 RPM",
+            "Motor Pulley 7 Inch B-Group, 4 Belts , Bore: 38 mm, Key: 10 mm",
+            "Shaft Pulley 14 Inch, Bore: 60 mm, Double Belt B-Group",
+            "SN Chakki Patthar 33 Inch"
+          ],
+          "SN Chalna 4x10": [
+            "Balance Wheel 24 Inch , 3.5 Inch Width , Bore: 2 Inch",
+            "Bearing P241",
+            "Belt B-95",
+            "Jali 3'' Capsule mesh screen",
+            "Jali 3.5'' Capsule mesh screen",
+            "Jali 4'' Capsule mesh screen",
+            "Jali 4.5'' Capsule mesh screen",
+            "Jali 5'' Capsule mesh screen",
+            "Kapda Gala Me Dalne Vala",
+            "Motor 3 HP, 960 RPM",
+            "Motor Pulley 3.5 Inch , Bore: 28 mm",
+            "Santri Bearing H-211",
+            "Shaft 34 Inch Length , 50 mm Thickness",
+            "Side Bearing 1307"
+          ],
+          "SN Deshi Elevator": [
+            "Belt B-95",
+            "Chain",
+            "Katori 8 Inch",
+            "Motor 2 HP, 960 RPM",
+            "Motor Pulley 2.5 Inch Single Belt B-Group , Bore: 24 mm",
+            "Pedisal P-211",
+            "Shaft 2 Inch Thikness , 26 Inch Length",
+            "Shaft Pulley 21 Inch Single Belt , Bore Size: 50 mm"
+          ],
+          "SN Deshi Grader": [
+            "Bearing P208",
+            "Belt B-91",
+            "Counter Pulley 14 Inch B-Group Double Belt , Bore: 38 mm",
+            "Jali mitti Chalne Vali",
+            "Motor 2 HP, 940 RPM",
+            "Motor Pulley 4 Inch Double Belt B-Group , Bore: 28 mm, Key: 8 mm",
+            "Shaft 38 mm Thickness , 30 Inch Length",
+            "Snatri Panti 3 Feet Length, 50 mm Width , 10 mm Thickness"
+          ],
+          "SN Handi": [
+            "Belt B-85",
+            "Drum + Dhakkan",
+            "Eet",
+            "Khali 12 Inch",
+            "Mitti",
+            "Motor 2 HP, 960 RPM",
+            "Motor Pulley 3 Inch , Bore Size: 38 mm",
+            "Pedestal P208",
+            "Pedestal P211",
+            "Pulley 18 Inch, B-Group",
+            "Shaft Thickness: 38 mm , Length: 24 Inch"
+          ],
+          "SN Screw Conveyor": [
+            "Belt B-65",
+            "Belt B-67",
+            "Conveyor Pedestal P208",
+            "Conveyor Pulley Single Belt B-Group , 14 Inch , Bore: 35 mm",
+            "Coper 8 Inch",
+            "Counter Pulley 14 Inch Single Belt, Bore: 30 mm",
+            "Counter Pulley 3 Inch Single Belt B-Group, Bore: 30 mm",
+            "Motor 2 HP, 1415 RPM",
+            "Motor Pulley 2.5 Inch Single Belt B-Group , Bore: 24 mm",
+            "Pedestal P207"
+          ],
+          "SN Shine Roster": [
+            "Belt B-116",
+            "Belt C - 175",
+            "Chain Sprocket 16 Inch to 50 Teeth Double, Bore Size: 4 Inch, Key: 15 mm",
+            "Chain Sprocket 6 Inch, 18 Teeth, Bore Size: 50 mm, Key: 10 mm",
+            "Counter Pulley 18 Inch, Double Belt , Bore Size: 50 mm",
+            "Counter Pulley B-Group Double Belt, 8 Inch, Bore: 50 mm, Key: 10 mm",
+            "Counter Pulley C-Group Double Belt, 30 Inch, Bore: 50 mm, Key: 12 mm",
+            "Drive",
+            "Eet",
+            "Gate",
+            "Heating Rui",
+            "Jali Mote Taar Se Binai Vala",
+            "Kabza",
+            "Mitti",
+            "Motor 10 HP, 975 RPM",
+            "Motor Pulley 4 Inch , Bore Size: 40 mm",
+            "Pedisal S-511",
+            "Pedisal s-528",
+            "Ret",
+            "Shaft Length: 30 Inch , Thickness: 50 mm",
+            "Temperature Meter Deshi Vala (Kate vala)"
+          ],
+          "SN Shine Roster Vibrator": [
+            "Controller"
+          ]
+        }
+      }
+    };
+
+    // Outer (General) 154 original source items retained for audit/reference only.
+    // Never forced into the user-facing dropdown (Outer always uses manual entry).
+    const OUTER_REFERENCE_ITEMS = Object.freeze([
+      "Z ELEVATOR 11 LTR",
+      "GN Z ELEVATOR 11 LTR GEAR BOX (GEAR BOX 50 RPM)",
+      "GN Z ELEVATOR 11 LTR GEAR-OIL (GEAR OIL)",
+      "Z ELEVATOR 11 LTR ANGLE 22\" (40x40)",
+      "Z ELEVATOR 11 LTR BEARING (BEARING 6206 ZZ)",
+      "Z ELEVATOR 11 LTR BEARING (BEARING SHAFT L 31.5\", BEARING SHEET 30 MM)",
+      "Z ELEVATOR 11 LTR BEARING LOCK (BEARING SHAFT LOCK-BIG SIZE BOR 40 MM, MO)",
+      "Z ELEVATOR 11 LTR BEARING LOCK (BEARING SHAFT LOCK-SMALL SIZE BOR 20 MM, N)",
+      "Z ELEVATOR 11 LTR BUCKET/KATORY (KAAN)",
+      "Z ELEVATOR 11 LTR CHAIN (CHAIN)",
+      "Z ELEVATOR 11 LTR CHAIN (CHAIN DUBBLE ME MOTOR CHAIN)",
+      "Z ELEVATOR 11 LTR CHAIN-LOCK (CHAIN LOCK MAIN CHAIN-MOTOR CHAIN)",
+      "Z ELEVATOR 11 LTR CHAIN-PIN (CHAIN PIN L. 27 MM X MO. 8 MM/6MM)",
+      "Z ELEVATOR 11 LTR CHAIN-SPOKIT (CHABI WALA CHAKKA 28 DATAN BOR 45 MM MO)",
+      "Z ELEVATOR 11 LTR CHAIN-SPOKIT (GEAR 18 DANTA)",
+      "Z ELEVATOR 11 LTR CHAIN-SPOKIT (SANTRY NUT CHOKOR)",
+      "Z ELEVATOR 11 LTR CHAKKA (BEARING CHAKKA 28 DATAN BOR 65 MM MO 12)",
+      "Z ELEVATOR 11 LTR CHAKKA (CHAKKA SHEET 45 MM, BEARING SHEET 40)",
+      "Z ELEVATOR 11 LTR CLUTCH (CLUTCH BUSH BOR 38 MM OD 65MM) BRUSH",
+      "Z ELEVATOR 11 LTR CLUTCH (CLUTCH GEAR 40 DANTA BOR 80 MM MO 28 MM)",
+      "Z ELEVATOR 11 LTR CLUTCH ( CLUTCH KATORI VAASAR OD 140 M BOR 80)",
+      "Z ELEVATOR 11 LTR CLUTCH (CLUTCH KATORY WASHER OD 127 MM BOR 70 MM)",
+      "Z ELEVATOR 11 LTR CLUTCH (CLUTCH LEATHER OD 148 MM BOR 80 MM MO)",
+      "Z ELEVATOR 11 LTR CLUTCH (CLUTCH SET COMPLETE)",
+      "Z ELEVATOR 11 LTR CUTTER PIN (11 LTR. CHAIN)",
+      "Z ELEVATOR 11 LTR GEAR 14 DANTA",
+      "Z ELEVATOR 11 LTR GEAR-REVERSE (REVERSE GEAR DANTA 35 MO. 23 MM BOR 29 M)",
+      "Z ELEVATOR 11 LTR GUIDE",
+      "Z ELEVATOR 11 LTR INLET L. 35\" CHO. 26\" ./ L 18\" CHO. 12\"",
+      "Z ELEVATOR 11 LTR IRON BAR(SARIA) CHOKOR L 20\" MO 10MM (DR)",
+      "Z ELEVATOR 11 LTR KATORY (BUCKET/KATORY L. 25.5\" X W. 9\" X D. 5.5\" BUCK)",
+      "Z ELEVATOR 11 LTR MOTOR (MOTOR 1440 RPM 2HP)",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (BOLT 12 MM X 3/4\")",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (BOLT 2 SUT X 1\")",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (BOLT 2 SUT X 2\")",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (BOLT 2 SUT X 3/4\")",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (BOLT 3 SUT X 1\")",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (BOLT 3 SUT X 2\")",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (BOLT 4 SUT X 2\")",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (LN KEY GARBH SCREW)",
+      "Z ELEVATOR 11 LTR NUTS AND BOLTS (SS BOLT MO. 12 MM L. 6\")",
+      "Z ELEVATOR 11 LTR NYLON PATTI 1\" X 1\", L. 35\"INCH",
+      "Z ELEVATOR 11 LTR PADISAL (PADISAL CHOKOR F 208 BOR 40 MM)",
+      "Z ELEVATOR 11 LTR SANTARY BOLT MO 16 MM , L 12",
+      "Z ELEVATOR 11 LTR SANTRY T 207 BOR 35 MM BEARING PADISAL-SE",
+      "Z ELEVATOR 11 LTR SHAFT (CHABI WALI SHAFT LOWER L. 35.5\", MM CHAKKA SHEET 45 MM , BEARING SHEET 40 MM",
+      "Z ELEVATOR 11 LTR SHAFT (CHABI WALI SHAFT UPPER L -40.5\", CHAKKA SHEET 45 MM)",
+      "Z ELEVATOR 11 LTR WHEELS (NYLON WHEEL MO. 38 MM, OD 138 MM, BOR 4)",
+      "Z ELEVATOR 4 LTR",
+      "Z ELEVATOR 4 LTR ANGLE 22\"",
+      "Z ELEVATOR 4 LTR BEARING (BEARING 6206 ZZ)",
+      "Z ELEVATOR 4 LTR BEARING LOCK (BEARING SHAFT LOCK-BIG SIZE BOR 40 MM, MO)",
+      "Z ELEVATOR 4 LTR BEARING LOCK (BEARING SHAFT LOCK-SMALL SIZE BOR 20 MM, N)",
+      "Z ELEVATOR 4 LTR BUCKET/KATORY (BUCKET/KATORY L. 15.5\" X W. 8\" X D. 4\")",
+      "Z ELEVATOR 4 LTR CHABI VALA CHAKKA 24 DANTA BOR 45 MM MO",
+      "Z ELEVATOR 4 LTR CHAIN (CHAIN)",
+      "Z ELEVATOR 4 LTR CHAIN (CHAIN DUBBLE ME)",
+      "Z ELEVATOR 4 LTR CHAIN-PIN (CHAIN PIN L. 27 MM X MO. 8 MM/6MM)",
+      "Z ELEVATOR 4 LTR CHAIN-SPOKIT (CHABI WALA CHAKKA 24 DATAN BOR 45 MM MO)",
+      "Z ELEVATOR 4 LTR CHAIN-SPOKIT (CHAIN SPOKIT 14 DANTA)",
+      "Z ELEVATOR 4 LTR CHAKKA (BEARING CHAKKA 24 DATAN BOR 62 MM MO. 12)",
+      "Z ELEVATOR 4 LTR CHAKKA (CHABI WALI SHAFT LOWER L 22.5\" , CHAKKA SHEET 45 MM BEARING SHEET 35",
+      "Z ELEVATOR 4 LTR CLUTCH (CLUTCH BUSH BOR 38 MM OD 65MM)",
+      "Z ELEVATOR 4 LTR CLUTCH (CLUTCH GEAR 40 DANTA BOR 62 MM MO. 12)",
+      "Z ELEVATOR 4 LTR CLUTCH (CLUTCH KATORY WASHER OD 140 MM BOR 80 MM MO. 3MM)",
+      "Z ELEVATOR 4 LTR CLUTCH (CLUTCH LEATHER OD 148 MM BOR 80 MM MO)",
+      "Z ELEVATOR 4 LTR CLUTCH (CLUTCH SET)",
+      "Z ELEVATOR 4 LTR CLUTCH GEAR 40 DANTA BOR 80 MM MO 28 MM",
+      "Z ELEVATOR 4 LTR CLUTCH PLET VAASAR OD 127 MM BOR 70 MM MO 8",
+      "Z ELEVATOR 4 LTR GEAR BOX (GEAR BOX 50 RPM)",
+      "Z ELEVATOR 4 LTR GEAR-OIL (GEAR OIL)",
+      "Z ELEVATOR 4 LTR GEAR-REVERSE (REVERSE GEAR DANTA 35 MO. 23 MM BOR 29 MM)",
+      "Z ELEVATOR 4 LTR GUIDE",
+      "Z ELEVATOR 4 LTR INLET L. 22\" CHO 22\" ,/ L 12\" CHO. 12\"",
+      "Z ELEVATOR 4 LTR IRON BAR(SARIA) CHOKOR L. 20\" MO. 10MM",
+      "Z ELEVATOR 4 LTR MOTOR (MOTOR 1440 RPM 2HP)",
+      "Z ELEVATOR 4 LTR NUTS AND BOLTS (BOLT 12 MM X 3/4\")",
+      "Z ELEVATOR 4 LTR NUTS AND BOLTS (BOLT 2 SUT X 1\")",
+      "Z ELEVATOR 4 LTR NUTS AND BOLTS (BOLT 2 SUT X 3/4\")",
+      "Z ELEVATOR 4 LTR NUTS AND BOLTS (BOLT 3 SUT X 1\")",
+      "Z ELEVATOR 4 LTR NUTS AND BOLTS (BOLT 3 SUT X 2\")",
+      "Z ELEVATOR 4 LTR NUTS AND BOLTS (BOLT 4 SUT X 2\")",
+      "Z ELEVATOR 4 LTR NUTS AND BOLTS (SANTRY BOLT MO. 16MM, L. 12\")",
+      "Z ELEVATOR 4 LTR NUTS AND BOLTS (SS BOLT MO. 12 MM L. 6\")",
+      "Z ELEVATOR 4 LTR NYLON PATTY (NYLON PATTI MO. 12-MM 1 X 1)",
+      "Z ELEVATOR 4 LTR PADISAL & BEARING (PADISAL CHOKOR F 208 BOR 40 MM)",
+      "Z ELEVATOR 4 LTR PADISAL & BEARING (SANTRY T 207 BOR 35 MM)",
+      "Z ELEVATOR 4 LTR SHAFT (BEARING SHAFT L. 19\" , BEARING SHEET 30 MM)",
+      "Z ELEVATOR 4 LTR SHAFT (CHABI WALI SHAFT UPPER L-28\" , CHAKKA SHEET 45 MM)",
+      "Z ELEVATOR 4 LTR WHEELS (NYLON WHEEL MO. 38 MM, OD 138 MM, BOR 45 MM)",
+      "ANGLE",
+      "BEARING",
+      "BELT",
+      "BIT",
+      "BOARD",
+      "Box",
+      "CAMERA",
+      "CHABI",
+      "CHAIN CHAKKA",
+      "CHAKKA",
+      "CLIP",
+      "CLUTCH",
+      "CONTACTOR",
+      "COTTON",
+      "COVER",
+      "CROSS",
+      "EJECTOR",
+      "FANWARA",
+      "FILTER",
+      "GALA",
+      "GEAR BOX",
+      "Glass",
+      "Guide",
+      "GUN",
+      "Handle",
+      "Iron Bar",
+      "Jali",
+      "Kabja",
+      "Kapling",
+      "Katory",
+      "Light'",
+      "Lock",
+      "Magnet",
+      "Meter",
+      "Motar",
+      "M Pullar",
+      "Nut & Bolts",
+      "OIL",
+      "Panel",
+      "Pankhha",
+      "PATTI",
+      "Pedisal",
+      "Pin",
+      "Pipe",
+      "Plate",
+      "Power Supply Unit",
+      "Pully",
+      "PULLY CHABI",
+      "Pump",
+      "ROD",
+      "Rola",
+      "Round Bar",
+      "Rubber",
+      "Screen",
+      "Shaft",
+      "Sheet",
+      "Siren",
+      "Spring",
+      "Switch",
+      "Tape",
+      "Valve",
+      "Washer",
+      "Wheels",
+      "Wire"
+    ]);
+
+    // Pre-build O(1) lookup sets for instant validation of predefined items
+    const ITEM_LOOKUP_SETS = (() => {
+      const map = new Map();
+      Object.entries(ITEM_MASTER).forEach(([deptCode, deptData]) => {
+        if (!deptData || !deptData.machines) return;
+        Object.entries(deptData.machines).forEach(([machineName, items]) => {
+          map.set(`${deptCode}||${machineName}`, new Set(items));
+        });
+      });
+      return map;
+    })();
+
+    const QUEUE_STORAGE_KEY = "dusad_store_out_pending_queue_v3";
+    const POST_TIMEOUT_MS = 25000;
+    const WARMUP_INTERVAL_MS = 180000; // Re-warm Apps Script V8 runtime every 3 minutes while active
+    const FORMULA_INJECTION_REGEX = /^[=+\-@\t\r]/;
+
+    /* ========================================================================
+       3. REUSABLE ACCESSIBLE SEARCHABLE DROPDOWN COMPONENT
+       ======================================================================== */
+    const activeDropdowns = new Set();
+
+    class SearchableSelect {
+      constructor({
+        container,
+        idPrefix,
+        labelledBy,
+        placeholder,
+        searchPlaceholder,
+        emptyText = "No items available",
+        disabled = false,
+        onChange = null
+      }) {
+        this.container = container;
+        this.idPrefix = idPrefix;
+        this.labelledBy = labelledBy;
+        this.placeholder = placeholder;
+        this.searchPlaceholder = searchPlaceholder || "Type to search...";
+        this.emptyText = emptyText;
+        this.disabled = disabled;
+        this.onChange = onChange;
+
+        this.options = [];
+        this.filteredOptions = [];
+        this.selectedValue = "";
+        this.selectedOption = null;
+        this.isOpen = false;
+        this.activeIndex = -1;
+        this.statusNote = "";
+
+        this._buildDOM();
+        this._bindEvents();
+        activeDropdowns.add(this);
+      }
+
+      _buildDOM() {
+        this.container.textContent = "";
+
+        const triggerShell = document.createElement("div");
+        triggerShell.className = "ss-trigger-shell";
+
+        this.triggerBtn = document.createElement("button");
+        this.triggerBtn.type = "button";
+        this.triggerBtn.id = `${this.idPrefix}Trigger`;
+        this.triggerBtn.className = "ss-trigger";
+        this.triggerBtn.disabled = this.disabled;
+        this.triggerBtn.setAttribute("role", "combobox");
+        this.triggerBtn.setAttribute("aria-haspopup", "listbox");
+        this.triggerBtn.setAttribute("aria-expanded", "false");
+        this.triggerBtn.setAttribute("aria-controls", `${this.idPrefix}Listbox`);
+        this.triggerBtn.setAttribute("aria-required", "true");
+        if (this.labelledBy) {
+          this.triggerBtn.setAttribute("aria-labelledby", this.labelledBy);
+        }
+
+        this.triggerText = document.createElement("span");
+        this.triggerText.className = "ss-trigger-text is-placeholder";
+        this.triggerText.textContent = this.placeholder;
+
+        const chevron = document.createElement("span");
+        chevron.className = "ss-chevron";
+        chevron.setAttribute("aria-hidden", "true");
+        chevron.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
+        this.triggerBtn.appendChild(this.triggerText);
+        this.triggerBtn.appendChild(chevron);
+
+        this.clearValueBtn = document.createElement("button");
+        this.clearValueBtn.type = "button";
+        this.clearValueBtn.className = "ss-clear-value-btn";
+        this.clearValueBtn.title = "Clear selection";
+        this.clearValueBtn.setAttribute("aria-label", `Clear ${this.idPrefix} selection`);
+        this.clearValueBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+        triggerShell.appendChild(this.triggerBtn);
+        triggerShell.appendChild(this.clearValueBtn);
+
+        this.panel = document.createElement("div");
+        this.panel.className = "ss-panel";
+
+        const searchWrap = document.createElement("div");
+        searchWrap.className = "ss-search-wrap";
+
+        const searchIcon = document.createElement("span");
+        searchIcon.className = "ss-search-icon";
+        searchIcon.setAttribute("aria-hidden", "true");
+        searchIcon.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+
+        this.searchInput = document.createElement("input");
+        this.searchInput.type = "text";
+        this.searchInput.className = "ss-search-input";
+        this.searchInput.placeholder = this.searchPlaceholder;
+        this.searchInput.autocomplete = "off";
+        this.searchInput.spellcheck = false;
+        this.searchInput.setAttribute("aria-label", this.searchPlaceholder);
+        this.searchInput.setAttribute("aria-controls", `${this.idPrefix}Listbox`);
+
+        this.clearSearchBtn = document.createElement("button");
+        this.clearSearchBtn.type = "button";
+        this.clearSearchBtn.className = "ss-search-clear";
+        this.clearSearchBtn.setAttribute("aria-label", "Clear search");
+        this.clearSearchBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+        searchWrap.appendChild(searchIcon);
+        searchWrap.appendChild(this.searchInput);
+        searchWrap.appendChild(this.clearSearchBtn);
+
+        this.listEl = document.createElement("ul");
+        this.listEl.id = `${this.idPrefix}Listbox`;
+        this.listEl.className = "ss-list";
+        this.listEl.setAttribute("role", "listbox");
+        if (this.labelledBy) {
+          this.listEl.setAttribute("aria-labelledby", this.labelledBy);
+        }
+
+        this.statusBar = document.createElement("div");
+        this.statusBar.className = "ss-status-bar hidden";
+
+        this.panel.appendChild(searchWrap);
+        this.panel.appendChild(this.listEl);
+        this.panel.appendChild(this.statusBar);
+
+        this.container.appendChild(triggerShell);
+        this.container.appendChild(this.panel);
+      }
+
+      _bindEvents() {
+        this.triggerBtn.addEventListener("click", () => {
+          if (this.disabled) return;
+          if (this.isOpen) this.close(false);
+          else this.open();
+        });
+
+        this.clearValueBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (this.disabled) return;
+          this.clearSelection(false);
+          this.triggerBtn.focus();
+        });
+
+        this.triggerBtn.addEventListener("keydown", (event) => {
+          if (this.disabled) return;
+          if (["ArrowDown", "ArrowUp", "Enter", " "].includes(event.key)) {
+            event.preventDefault();
+            if (!this.isOpen) this.open();
+          } else if (event.key === "Escape" && this.isOpen) {
+            event.preventDefault();
+            this.close(true);
+          } else if ((event.key === "Backspace" || event.key === "Delete") && this.selectedValue) {
+            event.preventDefault();
+            this.clearSelection(false);
+          }
+        });
+
+        this.searchInput.addEventListener("input", () => {
+          this._updateClearButtonVisibility();
+          this._filterOptions(this.searchInput.value);
+        });
+
+        this.searchInput.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowDown") {
+            event.preventDefault();
+            this._moveActive(1);
+          } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            this._moveActive(-1);
+          } else if (event.key === "Enter") {
+            event.preventDefault();
+            if (this.activeIndex >= 0 && this.filteredOptions[this.activeIndex]) {
+              this.selectByValue(this.filteredOptions[this.activeIndex].value, true);
+            }
+          } else if (event.key === "Escape") {
+            event.preventDefault();
+            this.close(true);
+          } else if (event.key === "Tab") {
+            this.close(false);
+          }
+        });
+
+        this.clearSearchBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.clearSearch();
+          this.searchInput.focus();
+        });
+      }
+
+      _updateClearButtonVisibility() {
+        this.clearSearchBtn.classList.toggle("is-visible", this.searchInput.value.length > 0);
+      }
+
+      _syncSelectionClass() {
+        this.container.classList.toggle("has-selection", Boolean(this.selectedValue) && !this.disabled);
+      }
+
+      setDisabled(disabled) {
+        this.disabled = Boolean(disabled);
+        this.triggerBtn.disabled = this.disabled;
+        this.triggerBtn.setAttribute("aria-disabled", String(this.disabled));
+        this.clearValueBtn.disabled = this.disabled;
+        if (this.disabled && this.isOpen) this.close(false);
+        this._syncSelectionClass();
+      }
+
+      setPlaceholder(text) {
+        this.placeholder = text;
+        if (!this.selectedOption) {
+          this.triggerText.textContent = text;
+          this.triggerText.title = "";
+          this.triggerText.classList.add("is-placeholder");
+        }
+      }
+
+      setStatusNote(text) {
+        this.statusNote = text || "";
+        if (this.statusNote) {
+          this.statusBar.textContent = this.statusNote;
+          this.statusBar.classList.remove("hidden");
+        } else {
+          this.statusBar.textContent = "";
+          this.statusBar.classList.add("hidden");
+        }
+      }
+
+      setOptions(options) {
+        this.options = Array.isArray(options)
+          ? options.map((opt) => ({
+              ...opt,
+              _searchLower: String(opt.searchText || `${opt.label} ${opt.meta || ""}`).toLowerCase()
+            }))
+          : [];
+        this.clearSearch(false);
+        this._filterOptions("");
+      }
+
+      clearOptions() {
+        this.options = [];
+        this.filteredOptions = [];
+        this.selectedValue = "";
+        this.selectedOption = null;
+        this.activeIndex = -1;
+        this.searchInput.value = "";
+        this._updateClearButtonVisibility();
+        this.triggerText.textContent = this.placeholder;
+        this.triggerText.title = "";
+        this.triggerText.classList.add("is-placeholder");
+        this.setStatusNote("");
+        this._syncSelectionClass();
+        this._renderList();
+      }
+
+      clearSearch(reRender = true) {
+        this.searchInput.value = "";
+        this._updateClearButtonVisibility();
+        if (reRender) this._filterOptions("");
+      }
+
+      clearSelection(silent = true) {
+        const hadValue = this.selectedValue !== "";
+        this.selectedValue = "";
+        this.selectedOption = null;
+        this.triggerText.textContent = this.placeholder;
+        this.triggerText.title = "";
+        this.triggerText.classList.add("is-placeholder");
+        this._syncSelectionClass();
+        this._renderList();
+        if (!silent && hadValue && typeof this.onChange === "function") {
+          this.onChange("", null);
+        }
+      }
+
+      getValue() { return this.selectedValue; }
+      hasValueInOptions(value) { return this.options.some((opt) => opt.value === value); }
+
+      selectByValue(value, notify = true) {
+        const match = this.options.find((opt) => opt.value === value) || null;
+        const previousValue = this.selectedValue;
+
+        if (!match) {
+          this.clearSelection(!notify);
+          return;
+        }
+
+        this.selectedValue = match.value;
+        this.selectedOption = match;
+        this.triggerText.textContent = match.label;
+        this.triggerText.title = match.label;
+        this.triggerText.classList.remove("is-placeholder");
+        this._syncSelectionClass();
+        this.close(true);
+        this._renderList();
+
+        if (notify && previousValue !== match.value && typeof this.onChange === "function") {
+          this.onChange(match.value, match);
+        }
+      }
+
+      open() {
+        if (this.disabled) return;
+        activeDropdowns.forEach((dd) => {
+          if (dd !== this && dd.isOpen) dd.close(false);
+        });
+        this.isOpen = true;
+        this.container.classList.add("is-open");
+        this.triggerBtn.setAttribute("aria-expanded", "true");
+        this._filterOptions(this.searchInput.value);
+        requestAnimationFrame(() => this.searchInput.focus());
+      }
+
+      close(returnFocus = false) {
+        if (!this.isOpen) return;
+        this.isOpen = false;
+        this.container.classList.remove("is-open");
+        this.triggerBtn.setAttribute("aria-expanded", "false");
+        this.searchInput.removeAttribute("aria-activedescendant");
+        if (returnFocus) this.triggerBtn.focus();
+      }
+
+      focus() { this.triggerBtn.focus(); }
+
+      _filterOptions(query) {
+        const normalized = String(query || "").trim().toLowerCase();
+        if (!normalized) {
+          this.filteredOptions = this.options.slice();
+        } else {
+          // Multi-token partial search across long alphanumeric item names
+          const tokens = normalized.split(/\s+/).filter(Boolean);
+          this.filteredOptions = this.options.filter((opt) =>
+            tokens.every((token) => opt._searchLower.includes(token))
+          );
+        }
+
+        if (this.filteredOptions.length === 0) {
+          this.activeIndex = -1;
+        } else {
+          const selectedIdx = this.filteredOptions.findIndex((opt) => opt.value === this.selectedValue);
+          this.activeIndex = selectedIdx >= 0 ? selectedIdx : 0;
+        }
+
+        this._renderList();
+        if (this.options.length > 0) {
+          const shown = this.filteredOptions.length;
+          const total = this.options.length;
+          this.setStatusNote(
+            normalized
+              ? `Showing ${shown} of ${total} matching option${total === 1 ? "" : "s"}`
+              : `${total} option${total === 1 ? "" : "s"} available`
+          );
+        }
+      }
+
+      _moveActive(delta) {
+        if (this.filteredOptions.length === 0) return;
+        const len = this.filteredOptions.length;
+        this.activeIndex = (this.activeIndex + delta + len) % len;
+        this._updateActiveHighlight();
+      }
+
+      _updateActiveHighlight() {
+        const items = this.listEl.querySelectorAll(".ss-option");
+        items.forEach((li, index) => {
+          const isActive = index === this.activeIndex;
+          li.classList.toggle("is-active", isActive);
+          if (isActive) {
+            this.searchInput.setAttribute("aria-activedescendant", li.id);
+            li.scrollIntoView({ block: "nearest" });
+          }
+        });
+      }
+
+      _renderList() {
+        this.listEl.textContent = "";
+
+        if (this.filteredOptions.length === 0) {
+          const emptyEl = document.createElement("li");
+          emptyEl.className = "ss-empty";
+          emptyEl.setAttribute("role", "option");
+          emptyEl.setAttribute("aria-disabled", "true");
+          emptyEl.textContent = this.emptyText;
+          this.listEl.appendChild(emptyEl);
+          this.searchInput.removeAttribute("aria-activedescendant");
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        this.filteredOptions.forEach((opt, index) => {
+          const li = document.createElement("li");
+          li.id = `${this.idPrefix}-opt-${index}`;
+          li.className = "ss-option";
+          li.setAttribute("role", "option");
+
+          const isSelected = opt.value === this.selectedValue;
+          li.setAttribute("aria-selected", String(isSelected));
+          if (isSelected) li.classList.add("is-selected");
+          if (index === this.activeIndex) li.classList.add("is-active");
+
+          const labelSpan = document.createElement("span");
+          labelSpan.textContent = opt.label;
+          li.appendChild(labelSpan);
+
+          if (opt.meta) {
+            const metaSpan = document.createElement("span");
+            metaSpan.className = "ss-option-meta";
+            metaSpan.textContent = opt.meta;
+            li.appendChild(metaSpan);
+          }
+
+          li.addEventListener("mouseenter", () => {
+            this.activeIndex = index;
+            this._updateActiveHighlight();
+          });
+
+          li.addEventListener("click", (event) => {
+            event.preventDefault();
+            this.selectByValue(opt.value, true);
+          });
+
+          fragment.appendChild(li);
+        });
+
+        this.listEl.appendChild(fragment);
+        if (this.activeIndex >= 0) {
+          const activeEl = this.listEl.children[this.activeIndex];
+          if (activeEl && activeEl.id) {
+            this.searchInput.setAttribute("aria-activedescendant", activeEl.id);
+          }
+        }
+      }
+    }
+
+    document.addEventListener("click", (event) => {
+      activeDropdowns.forEach((dd) => {
+        if (dd.isOpen && !dd.container.contains(event.target)) {
+          dd.close(false);
+        }
+      });
+    });
+
+    /* ========================================================================
+       4. DOM REFERENCES & APPLICATION STATE
        ======================================================================== */
     const form = document.getElementById("storeOutForm");
+
     const fields = {
       date: document.getElementById("entryDate"),
-      department: document.getElementById("department"),
-      itemName: document.getElementById("itemName"),
+      machineUseManual: document.getElementById("machineUseManual"),
+      reviewMachineManual: document.getElementById("reviewMachineManual"),
+      itemNameManual: document.getElementById("itemNameManual"),
       qty: document.getElementById("qty"),
       outTime: document.getElementById("outTime"),
       givenTo: document.getElementById("givenTo"),
@@ -942,7 +3118,23 @@
       remarks: document.getElementById("remarks")
     };
 
+    const departmentContainer = document.getElementById("departmentDropdown");
+    const machineContainer = document.getElementById("machineUseDropdown");
+    const itemContainer = document.getElementById("itemNameDropdown");
+
+    const machineLabel = document.getElementById("label-machineUse");
+    const itemLabel = document.getElementById("label-itemName");
+    const machineModeBadge = document.getElementById("machineModeBadge");
+    const itemModeBadge = document.getElementById("itemModeBadge");
+    const itemHintEl = document.getElementById("hint-itemName");
+
+    const danaReviewBar = document.getElementById("danaReviewBar");
+    const danaReviewText = document.getElementById("danaReviewText");
+    const danaReviewToggleBtn = document.getElementById("danaReviewToggleBtn");
+    const reviewMachineOverrideWrap = document.getElementById("reviewMachineOverrideWrap");
+
     const submitBtn = document.getElementById("submitBtn");
+    const submitBtnText = document.getElementById("submitBtnText");
     const clearBtn = document.getElementById("clearBtn");
     const syncDateTimeBtn = document.getElementById("syncDateTimeBtn");
 
@@ -955,20 +3147,67 @@
     const alertIcon = document.getElementById("alertIcon");
     const alertTitle = document.getElementById("alertTitle");
     const alertMessage = document.getElementById("alertMessage");
+    const alertExtraActions = document.getElementById("alertExtraActions");
     const alertCloseBtn = document.getElementById("alertCloseBtn");
 
+    const queuePanel = document.getElementById("queuePanel");
+    const queuePanelTitle = document.getElementById("queuePanelTitle");
+    const queueList = document.getElementById("queueList");
+    const retryQueueAllBtn = document.getElementById("retryQueueAllBtn");
+
+    let isSubmitting = false;
+    let isProcessingQueue = false;
+    let isDanaReviewManualMode = false;
+    let activeDraftSubmissionId = null;
+    let activeDraftAttempted = false;
+    let lastWarmupAt = 0;
+    let warmupInFlight = false;
     let notificationTimer = null;
-    let retryTimer = null;
-    let isSyncingQueue = false;
-    let lastSubmitTime = 0;
-    let syncQueue = loadQueue();
+    let pendingQueue = loadPendingQueue();
 
     /* ========================================================================
-       3. DATE, TIME & INITIALIZATION HELPERS
+       5. INITIALIZE SEARCHABLE DROPDOWNS
        ======================================================================== */
-    function pad2(num) {
-      return String(num).padStart(2, "0");
-    }
+    const departmentSelect = new SearchableSelect({
+      container: departmentContainer,
+      idPrefix: "department",
+      labelledBy: "label-department",
+      placeholder: "Select Department",
+      searchPlaceholder: "Search department...",
+      emptyText: "No items available",
+      disabled: false,
+      onChange: (deptCode) => handleDepartmentChange(deptCode)
+    });
+
+    const machineSelect = new SearchableSelect({
+      container: machineContainer,
+      idPrefix: "machineUse",
+      labelledBy: "label-machineUse",
+      placeholder: "Select Department first",
+      searchPlaceholder: "Search machine...",
+      emptyText: "No items available",
+      disabled: true,
+      onChange: (machineName) => handleMachineChange(machineName)
+    });
+
+    const itemSelect = new SearchableSelect({
+      container: itemContainer,
+      idPrefix: "itemName",
+      labelledBy: "label-itemName",
+      placeholder: "Select Machine Use first",
+      searchPlaceholder: "Search item by any keyword, size, or number...",
+      emptyText: "No items available",
+      disabled: true,
+      onChange: () => {
+        clearFieldError("itemName");
+        invalidateDraftSubmissionId();
+      }
+    });
+
+    /* ========================================================================
+       6. DATE, TIME & HELPER UTILITIES
+       ======================================================================== */
+    function pad2(num) { return String(num).padStart(2, "0"); }
 
     function getCurrentLocalDate() {
       const now = new Date();
@@ -987,150 +3226,125 @@
       clearFieldError("outTime");
     }
 
-    function populateDepartments() {
-      const fragment = document.createDocumentFragment();
-      DEPARTMENTS.forEach((dept) => {
-        const option = document.createElement("option");
-        option.value = dept;
-        option.textContent = dept;
-        fragment.appendChild(option);
-      });
-      fields.department.appendChild(fragment);
+    function generateSubmissionId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return `DUSAD-${window.crypto.randomUUID()}`;
+      }
+      return `DUSAD-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function invalidateDraftSubmissionId() {
+      if (!isSubmitting) {
+        activeDraftSubmissionId = null;
+        activeDraftAttempted = false;
+      }
+    }
+
+    // Silent background warm-up ping: wakes Apps Script V8 runtime & opens TLS socket
+    // while the user fills out the form, cutting 2.5-4s cold-start latency on Submit.
+    function warmUpBackend(force = false) {
+      const endpoint = SCRIPT_URL.trim();
+      if (!endpoint || !navigator.onLine || warmupInFlight || isSubmitting) return;
+
+      const now = Date.now();
+      if (!force && now - lastWarmupAt < WARMUP_INTERVAL_MS) return;
+
+      warmupInFlight = true;
+      lastWarmupAt = now;
+      const sep = endpoint.includes("?") ? "&" : "?";
+
+      fetch(`${endpoint}${sep}action=warmup&t=${now}`, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-store",
+        redirect: "follow"
+      })
+        .catch(() => {})
+        .finally(() => {
+          warmupInFlight = false;
+        });
+    }
+
+    function isOuterDepartment(deptCode) { return deptCode === "General"; }
+
+    function isPredefinedDepartment(deptCode) {
+      return Boolean(deptCode && ITEM_MASTER[deptCode] && ITEM_MASTER[deptCode].machines);
+    }
+
+    function getMachinesForDepartment(deptCode) {
+      if (!isPredefinedDepartment(deptCode)) return [];
+      return Object.keys(ITEM_MASTER[deptCode].machines);
+    }
+
+    function getItemsForMachine(deptCode, machineName) {
+      if (!isPredefinedDepartment(deptCode)) return [];
+      const list = ITEM_MASTER[deptCode].machines[machineName];
+      return Array.isArray(list) ? list : [];
+    }
+
+    function isValidPredefinedMachine(deptCode, machineName) {
+      return isPredefinedDepartment(deptCode) &&
+        Object.prototype.hasOwnProperty.call(ITEM_MASTER[deptCode].machines, machineName);
+    }
+
+    function isValidPredefinedItem(deptCode, machineName, itemName) {
+      const lookupSet = ITEM_LOOKUP_SETS.get(`${deptCode}||${machineName}`);
+      return Boolean(lookupSet && lookupSet.has(itemName));
+    }
+
+    function setItemHint(text) {
+      if (text) {
+        itemHintEl.textContent = text;
+        itemHintEl.classList.remove("hidden");
+      } else {
+        itemHintEl.textContent = "";
+        itemHintEl.classList.add("hidden");
+      }
     }
 
     /* ========================================================================
-       4. PERSISTENT BACKGROUND SYNC QUEUE (INSTANT SUBMIT, ZERO WAIT)
+       7. STATUS PILL & NOTIFICATIONS
        ======================================================================== */
-    function loadQueue() {
-      try {
-        const raw = localStorage.getItem(QUEUE_STORAGE_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (_) {
-        return [];
-      }
-    }
+    function updateStatusUI() {
+      const hasUrl = SCRIPT_URL.trim().length > 0;
+      integrationPill.classList.remove("is-connected", "is-syncing", "is-error");
 
-    function saveQueue() {
-      try {
-        localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(syncQueue));
-      } catch (_) {
-        // Ignore storage quota / private-mode errors
-      }
-    }
-
-    function updateIntegrationStatusUI() {
-      const isConnected = SCRIPT_URL.trim().length > 0;
-      integrationPill.classList.remove("is-connected", "is-syncing");
-
-      if (!isConnected) {
-        integrationPillText.textContent = "Live Submission Not Connected";
+      if (!hasUrl) {
+        integrationPillText.textContent = "Embedded Master • Save URL Missing";
         integrationNotice.classList.remove("hidden");
         return;
       }
 
       integrationNotice.classList.add("hidden");
 
-      if (syncQueue.length > 0) {
-        if (!navigator.onLine) {
-          integrationPillText.textContent = `${syncQueue.length} Queued (Offline)`;
-        } else {
-          integrationPill.classList.add("is-syncing");
-          integrationPillText.textContent = `Syncing (${syncQueue.length} pending)...`;
-        }
-      } else {
-        integrationPill.classList.add("is-connected");
-        integrationPillText.textContent = "Google Sheet Connected";
-      }
-    }
-
-    function buildRequestUrl(endpoint, entryData) {
-      const params = new URLSearchParams();
-      Object.entries(entryData).forEach(([key, value]) => {
-        params.append(key, value === null || value === undefined ? "" : String(value));
-      });
-      const separator = endpoint.includes("?") ? "&" : "?";
-      return `${endpoint}${separator}${params.toString()}`;
-    }
-
-    async function sendSingleEntry(entryData) {
-      const endpoint = SCRIPT_URL.trim();
-      const requestUrl = buildRequestUrl(endpoint, entryData);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-      try {
-        await fetch(requestUrl, {
-          method: "POST",
-          mode: "no-cors",
-          cache: "no-cache",
-          redirect: "follow",
-          keepalive: true,
-          signal: controller.signal,
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-          body: JSON.stringify(entryData)
-        });
-        return true;
-      } catch (_) {
-        return false;
-      } finally {
-        clearTimeout(timeoutId);
-      }
-    }
-
-    async function processSyncQueue() {
-      if (isSyncingQueue || syncQueue.length === 0) {
-        updateIntegrationStatusUI();
+      const pendingCount = pendingQueue.filter((item) => item.status === "Pending").length;
+      if (isProcessingQueue) {
+        integrationPill.classList.add("is-syncing");
+        integrationPillText.textContent = `Syncing Queue (${pendingCount})...`;
         return;
       }
 
-      if (!SCRIPT_URL.trim() || !navigator.onLine) {
-        updateIntegrationStatusUI();
+      if (!navigator.onLine) {
+        integrationPill.classList.add("is-error");
+        integrationPillText.textContent = pendingCount > 0
+          ? `Offline (${pendingCount} Pending)`
+          : "Offline • Master Ready";
         return;
       }
 
-      isSyncingQueue = true;
-      updateIntegrationStatusUI();
-
-      while (syncQueue.length > 0) {
-        if (!navigator.onLine) {
-          break;
-        }
-
-        const currentItem = syncQueue[0];
-        const sent = await sendSingleEntry(currentItem.payload);
-
-        if (sent) {
-          syncQueue.shift();
-          saveQueue();
-          updateIntegrationStatusUI();
-        } else {
-          currentItem.retries = (currentItem.retries || 0) + 1;
-          saveQueue();
-          const backoffMs = Math.min(15000, 2000 * currentItem.retries);
-          clearTimeout(retryTimer);
-          retryTimer = setTimeout(() => processSyncQueue(), backoffMs);
-          break;
-        }
-      }
-
-      isSyncingQueue = false;
-      updateIntegrationStatusUI();
+      integrationPill.classList.add("is-connected");
+      integrationPillText.textContent = pendingCount > 0
+        ? `Ready (${pendingCount} Pending)`
+        : "Master Ready • Sheet Connected";
     }
 
-    /* ========================================================================
-       5. NOTIFICATION SYSTEM
-       ======================================================================== */
     const ALERT_ICONS = {
       success: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
       error: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
       warning: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
     };
 
-    function showNotification(type, title, message, autoHideMs = 4000) {
+    function showNotification(type, title, message, autoHideMs = 6000, actions = []) {
       if (notificationTimer) {
         clearTimeout(notificationTimer);
         notificationTimer = null;
@@ -1140,7 +3354,21 @@
       alertIcon.innerHTML = ALERT_ICONS[type] || ALERT_ICONS.error;
       alertTitle.textContent = title;
       alertMessage.textContent = message;
+
+      alertExtraActions.textContent = "";
+      if (Array.isArray(actions) && actions.length > 0) {
+        actions.forEach((act) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "alert-action-btn";
+          btn.textContent = act.label;
+          btn.addEventListener("click", act.onClick);
+          alertExtraActions.appendChild(btn);
+        });
+      }
+
       notificationArea.classList.add("is-visible");
+      notificationArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
       if (autoHideMs > 0) {
         notificationTimer = setTimeout(hideNotification, autoHideMs);
@@ -1149,6 +3377,7 @@
 
     function hideNotification() {
       notificationArea.classList.remove("is-visible");
+      alertExtraActions.textContent = "";
       if (notificationTimer) {
         clearTimeout(notificationTimer);
         notificationTimer = null;
@@ -1156,7 +3385,215 @@
     }
 
     /* ========================================================================
-       6. VALIDATION ENGINE (BLANK FIELDS ALLOWED; POSITIVE QTY IF ENTERED)
+       8. DEPENDENT DROPDOWN LOGIC (EMBEDDED MASTER + OUTER + DANA REVIEW PATH)
+       ======================================================================== */
+    function resetDanaReviewUI() {
+      isDanaReviewManualMode = false;
+      danaReviewBar.classList.add("hidden");
+      reviewMachineOverrideWrap.classList.add("hidden");
+      fields.reviewMachineManual.value = "";
+      danaReviewToggleBtn.textContent = "Enter Manually (Review)";
+    }
+
+    function applyDanaReviewMode(manualEnabled) {
+      invalidateDraftSubmissionId();
+      isDanaReviewManualMode = Boolean(manualEnabled);
+      clearFieldError("machineUse");
+      clearFieldError("itemName");
+
+      if (isDanaReviewManualMode) {
+        reviewMachineOverrideWrap.classList.remove("hidden");
+        itemContainer.classList.add("hidden");
+        itemSelect.close(false);
+        itemSelect.clearSelection(true);
+
+        fields.itemNameManual.classList.remove("hidden");
+        fields.itemNameManual.disabled = false;
+        fields.itemNameManual.value = "";
+        itemLabel.setAttribute("for", "itemNameManual");
+        itemModeBadge.textContent = "Manual Review";
+        itemModeBadge.classList.remove("hidden");
+        machineModeBadge.textContent = "Review Mode";
+        machineModeBadge.classList.remove("hidden");
+
+        danaReviewText.textContent =
+          "Manual review entry active for Dana (Other / Unclassified). Type the item name below and optionally specify a machine name.";
+        danaReviewToggleBtn.textContent = "Use 7 Preserved Items";
+        setItemHint("Manual review mode: type any unclassified Dana item name.");
+        fields.itemNameManual.focus();
+      } else {
+        reviewMachineOverrideWrap.classList.add("hidden");
+        fields.reviewMachineManual.value = "";
+
+        fields.itemNameManual.classList.add("hidden");
+        fields.itemNameManual.value = "";
+        itemContainer.classList.remove("hidden");
+        itemLabel.setAttribute("for", "itemNameTrigger");
+        itemModeBadge.classList.add("hidden");
+        machineModeBadge.classList.add("hidden");
+
+        danaReviewText.textContent =
+          "Review Group (7 preserved records): Select one of the 7 preserved items below, or switch to manual entry for an unclassified Dana item.";
+        danaReviewToggleBtn.textContent = "Enter Manually (Review)";
+
+        const reviewItems = getItemsForMachine("DN", DANA_REVIEW_GROUP);
+        setItemHint(`${reviewItems.length} preserved unclassified Dana items available.`);
+      }
+    }
+
+    function switchFieldsToOuterManualMode() {
+      resetDanaReviewUI();
+
+      machineContainer.classList.add("hidden");
+      machineSelect.close(false);
+      machineSelect.clearOptions();
+      machineSelect.setDisabled(true);
+
+      fields.machineUseManual.classList.remove("hidden");
+      fields.machineUseManual.disabled = false;
+      fields.machineUseManual.value = "";
+      machineLabel.setAttribute("for", "machineUseManual");
+      machineModeBadge.textContent = "Manual Entry";
+      machineModeBadge.classList.remove("hidden");
+
+      itemContainer.classList.add("hidden");
+      itemSelect.close(false);
+      itemSelect.clearOptions();
+      itemSelect.setDisabled(true);
+
+      fields.itemNameManual.classList.remove("hidden");
+      fields.itemNameManual.disabled = false;
+      fields.itemNameManual.value = "";
+      itemLabel.setAttribute("for", "itemNameManual");
+      itemModeBadge.textContent = "Manual Entry";
+      itemModeBadge.classList.remove("hidden");
+
+      setItemHint("Outer (General) selected: enter Machine Use and Item Name manually.");
+    }
+
+    function switchFieldsToPredefinedMode() {
+      resetDanaReviewUI();
+
+      fields.machineUseManual.classList.add("hidden");
+      fields.machineUseManual.value = "";
+      machineContainer.classList.remove("hidden");
+      machineLabel.setAttribute("for", "machineUseTrigger");
+      machineModeBadge.classList.add("hidden");
+
+      fields.itemNameManual.classList.add("hidden");
+      fields.itemNameManual.value = "";
+      itemContainer.classList.remove("hidden");
+      itemLabel.setAttribute("for", "itemNameTrigger");
+      itemModeBadge.classList.add("hidden");
+      setItemHint("");
+    }
+
+    function handleDepartmentChange(deptCode) {
+      invalidateDraftSubmissionId();
+      if (deptCode) warmUpBackend(false);
+      clearFieldError("department");
+      clearFieldError("machineUse");
+      clearFieldError("itemName");
+
+      // Immediate dependent reset
+      machineSelect.close(false);
+      machineSelect.clearSearch(false);
+      machineSelect.clearOptions();
+
+      itemSelect.close(false);
+      itemSelect.clearSearch(false);
+      itemSelect.clearOptions();
+      itemSelect.setDisabled(true);
+      itemSelect.setPlaceholder("Select Machine Use first");
+
+      fields.machineUseManual.value = "";
+      fields.reviewMachineManual.value = "";
+      fields.itemNameManual.value = "";
+      setItemHint("");
+
+      if (!deptCode) {
+        switchFieldsToPredefinedMode();
+        machineSelect.setDisabled(true);
+        machineSelect.setPlaceholder("Select Department first");
+        return;
+      }
+
+      if (isOuterDepartment(deptCode)) {
+        switchFieldsToOuterManualMode();
+        return;
+      }
+
+      switchFieldsToPredefinedMode();
+      const machines = getMachinesForDepartment(deptCode);
+      const machineOptions = machines.map((machineName) => {
+        const count = getItemsForMachine(deptCode, machineName).length;
+        return {
+          value: machineName,
+          label: machineName,
+          meta: deptCode === "DN" && machineName === DANA_REVIEW_GROUP ? `Review • ${count}` : `${count}`,
+          searchText: machineName
+        };
+      });
+
+      machineSelect.setOptions(machineOptions);
+      machineSelect.setPlaceholder("Select Machine Use");
+      machineSelect.setDisabled(machineOptions.length === 0);
+    }
+
+    function handleMachineChange(machineName) {
+      invalidateDraftSubmissionId();
+      const deptCode = departmentSelect.getValue();
+
+      clearFieldError("machineUse");
+      clearFieldError("itemName");
+      resetDanaReviewUI();
+
+      // Immediate Item Name reset
+      itemSelect.close(false);
+      itemSelect.clearSearch(false);
+      itemSelect.clearOptions();
+      fields.itemNameManual.classList.add("hidden");
+      fields.itemNameManual.value = "";
+      itemContainer.classList.remove("hidden");
+      itemLabel.setAttribute("for", "itemNameTrigger");
+      itemModeBadge.classList.add("hidden");
+      machineModeBadge.classList.add("hidden");
+      setItemHint("");
+
+      if (!deptCode || !machineName || !isValidPredefinedMachine(deptCode, machineName)) {
+        itemSelect.setDisabled(true);
+        itemSelect.setPlaceholder("Select Machine Use first");
+        return;
+      }
+
+      const items = getItemsForMachine(deptCode, machineName);
+      const itemOptions = items.map((originalName) => ({
+        value: originalName,
+        label: originalName,
+        searchText: originalName
+      }));
+
+      itemSelect.setOptions(itemOptions);
+
+      if (itemOptions.length > 0) {
+        itemSelect.setPlaceholder("Select Item Name");
+        itemSelect.setDisabled(false);
+        setItemHint(`${itemOptions.length} original item${itemOptions.length === 1 ? "" : "s"} available.`);
+      } else {
+        itemSelect.setPlaceholder("No items available");
+        itemSelect.setDisabled(false);
+        setItemHint("No items available for this machine.");
+      }
+
+      // Show review toggle path specifically for Dana -> Other / Unclassified
+      if (deptCode === "DN" && machineName === DANA_REVIEW_GROUP) {
+        danaReviewBar.classList.remove("hidden");
+        applyDanaReviewMode(false);
+      }
+    }
+
+    /* ========================================================================
+       9. VALIDATION & PAYLOAD COLLECTION
        ======================================================================== */
     function setFieldError(fieldName, message) {
       const group = form.querySelector(`.field-group[data-field="${fieldName}"]`);
@@ -1177,154 +3614,745 @@
     }
 
     function clearAllErrors() {
-      form.querySelectorAll(".field-group.has-error").forEach((group) => {
-        group.classList.remove("has-error");
-      });
-      form.querySelectorAll(".field-error").forEach((el) => {
-        el.textContent = "";
-      });
+      form.querySelectorAll(".field-group.has-error").forEach((group) => group.classList.remove("has-error"));
+      form.querySelectorAll(".field-error").forEach((el) => { el.textContent = ""; });
+    }
+
+    function validateNoFormulaPrefix(fieldKey, value, label) {
+      if (value && FORMULA_INJECTION_REGEX.test(value)) {
+        setFieldError(fieldKey, `${label} cannot start with =, +, -, or @.`);
+        return false;
+      }
+      return true;
     }
 
     function validateForm() {
       clearAllErrors();
+      let firstInvalidFocus = null;
+      let isValid = true;
 
+      const deptCode = departmentSelect.getValue();
+
+      // 1. Department required
+      if (!deptCode || !DEPARTMENT_BY_CODE[deptCode]) {
+        setFieldError("department", "Please select a Department.");
+        firstInvalidFocus = firstInvalidFocus || (() => departmentSelect.focus());
+        isValid = false;
+      }
+
+      // 2. Machine Use & 3. Item Name validation
+      if (deptCode && isOuterDepartment(deptCode)) {
+        const manualMachine = fields.machineUseManual.value.trim();
+        const manualItem = fields.itemNameManual.value.trim();
+
+        if (!manualMachine) {
+          setFieldError("machineUse", "Please enter Machine Use for Outer (General).");
+          firstInvalidFocus = firstInvalidFocus || (() => fields.machineUseManual.focus());
+          isValid = false;
+        } else if (!validateNoFormulaPrefix("machineUse", manualMachine, "Machine Use")) {
+          firstInvalidFocus = firstInvalidFocus || (() => fields.machineUseManual.focus());
+          isValid = false;
+        }
+
+        if (!manualItem) {
+          setFieldError("itemName", "Please enter Item Name for Outer (General).");
+          firstInvalidFocus = firstInvalidFocus || (() => fields.itemNameManual.focus());
+          isValid = false;
+        } else if (!validateNoFormulaPrefix("itemName", manualItem, "Item Name")) {
+          firstInvalidFocus = firstInvalidFocus || (() => fields.itemNameManual.focus());
+          isValid = false;
+        }
+      } else if (deptCode && isPredefinedDepartment(deptCode)) {
+        const selectedMachine = machineSelect.getValue();
+
+        if (!selectedMachine) {
+          setFieldError("machineUse", "Please select a Machine Use.");
+          firstInvalidFocus = firstInvalidFocus || (() => machineSelect.focus());
+          isValid = false;
+        } else if (!isValidPredefinedMachine(deptCode, selectedMachine)) {
+          setFieldError("machineUse", "Selected machine does not belong to the selected Department.");
+          firstInvalidFocus = firstInvalidFocus || (() => machineSelect.focus());
+          isValid = false;
+        }
+
+        // Dana Other / Unclassified manual review path vs standard embedded master validation
+        if (deptCode === "DN" && selectedMachine === DANA_REVIEW_GROUP && isDanaReviewManualMode) {
+          const overrideMachine = fields.reviewMachineManual.value.trim();
+          const manualItem = fields.itemNameManual.value.trim();
+
+          if (overrideMachine && !validateNoFormulaPrefix("machineUse", overrideMachine, "Machine Use")) {
+            firstInvalidFocus = firstInvalidFocus || (() => fields.reviewMachineManual.focus());
+            isValid = false;
+          }
+
+          if (!manualItem) {
+            setFieldError("itemName", "Please enter an Item Name for this manual review entry.");
+            firstInvalidFocus = firstInvalidFocus || (() => fields.itemNameManual.focus());
+            isValid = false;
+          } else if (!validateNoFormulaPrefix("itemName", manualItem, "Item Name")) {
+            firstInvalidFocus = firstInvalidFocus || (() => fields.itemNameManual.focus());
+            isValid = false;
+          }
+        } else {
+          const selectedItem = itemSelect.getValue();
+          if (!selectedItem) {
+            setFieldError("itemName", "Please select an Item Name from the embedded master list.");
+            firstInvalidFocus = firstInvalidFocus || (() => itemSelect.focus());
+            isValid = false;
+          } else if (!isValidPredefinedItem(deptCode, selectedMachine, selectedItem)) {
+            setFieldError("itemName", "Selected item does not belong to the selected Department and Machine.");
+            firstInvalidFocus = firstInvalidFocus || (() => itemSelect.focus());
+            isValid = false;
+          }
+        }
+      } else {
+        setFieldError("machineUse", "Please select Department and Machine Use.");
+        setFieldError("itemName", "Please select an Item Name.");
+        isValid = false;
+      }
+
+      // 4. Quantity optional (must be > 0 if entered)
       const rawQty = fields.qty.value.trim();
       if (rawQty !== "") {
         const parsedQty = Number(rawQty);
         if (!Number.isFinite(parsedQty) || parsedQty <= 0) {
           setFieldError("qty", "If entered, quantity must be a positive number greater than 0.");
-          fields.qty.focus();
-          return false;
+          firstInvalidFocus = firstInvalidFocus || (() => fields.qty.focus());
+          isValid = false;
         }
       }
 
-      return true;
+      // Spreadsheet formula-injection protection on free-text fields
+      if (!validateNoFormulaPrefix("givenTo", fields.givenTo.value.trim(), "Given To")) {
+        firstInvalidFocus = firstInvalidFocus || (() => fields.givenTo.focus());
+        isValid = false;
+      }
+      if (!validateNoFormulaPrefix("issuedBy", fields.issuedBy.value.trim(), "Issued By")) {
+        firstInvalidFocus = firstInvalidFocus || (() => fields.issuedBy.focus());
+        isValid = false;
+      }
+      if (!validateNoFormulaPrefix("remarks", fields.remarks.value.trim(), "Purpose / Remarks")) {
+        firstInvalidFocus = firstInvalidFocus || (() => fields.remarks.focus());
+        isValid = false;
+      }
+
+      if (!isValid && firstInvalidFocus) firstInvalidFocus();
+      return isValid;
     }
 
     function collectFormData() {
+      const deptCode = departmentSelect.getValue();
+      const isOuter = isOuterDepartment(deptCode);
       const rawQty = fields.qty.value.trim();
+
+      let machineUseValue = "";
+      let itemNameValue = "";
+
+      if (isOuter) {
+        machineUseValue = fields.machineUseManual.value.trim();
+        itemNameValue = fields.itemNameManual.value.trim();
+      } else if (deptCode === "DN" && machineSelect.getValue() === DANA_REVIEW_GROUP && isDanaReviewManualMode) {
+        const customMachine = fields.reviewMachineManual.value.trim();
+        machineUseValue = customMachine || DANA_REVIEW_GROUP;
+        itemNameValue = fields.itemNameManual.value.trim();
+      } else {
+        // Preserve complete original embedded wording without modifying it
+        machineUseValue = machineSelect.getValue();
+        itemNameValue = itemSelect.getValue();
+      }
+
+      if (!activeDraftSubmissionId) {
+        activeDraftSubmissionId = generateSubmissionId();
+      }
+
       return {
+        submissionId: activeDraftSubmissionId,
         date: fields.date.value.trim(),
-        department: fields.department.value.trim(),
-        itemName: fields.itemName.value.trim(),
+        department: deptCode,
+        machineUse: machineUseValue,
+        itemName: itemNameValue,
         qty: rawQty === "" ? "" : Number(rawQty),
         outTime: fields.outTime.value.trim(),
         givenTo: fields.givenTo.value.trim(),
         issuedBy: fields.issuedBy.value.trim(),
-        remarks: fields.remarks.value.trim()
+        remarks: fields.remarks.value.trim(),
+        receiverSign: ""
       };
     }
 
-    function resetFormFields(keepNotification = false) {
-      form.reset();
-      clearAllErrors();
-      setAutoDateTime();
-      if (!keepNotification) {
-        hideNotification();
+    /* ========================================================================
+       10. SERVER-CONFIRMED GOOGLE APPS SCRIPT SUBMISSION & PENDING QUEUE
+       ======================================================================== */
+    function extractSerialRef(result) {
+      const dataObj = result && result.data && typeof result.data === "object" ? result.data : {};
+      const candidates = [
+        result.serialNo,
+        result.sNo,
+        result.sno,
+        result.rowNumber,
+        dataObj.serialNo,
+        dataObj.sNo,
+        dataObj.sno,
+        dataObj.rowNumber
+      ];
+      for (const value of candidates) {
+        if (value !== undefined && value !== null && String(value).trim() !== "") {
+          return String(value).trim();
+        }
       }
-      fields.department.focus();
+      return "";
+    }
+
+    function parseServerConfirmation(result) {
+      if (!result || typeof result !== "object" || Array.isArray(result)) {
+        return {
+          confirmed: false,
+          serverRejected: false,
+          message: "Backend returned an unreadable response. Entry confirmation could not be verified."
+        };
+      }
+
+      const isOk =
+        result.ok === true ||
+        result.success === true ||
+        String(result.status || "").toLowerCase() === "success" ||
+        String(result.result || "").toLowerCase() === "success";
+
+      if (isOk) {
+        const isDuplicate = result.duplicate === true;
+        const serialInfo = extractSerialRef(result);
+        const defaultMsg = isDuplicate
+          ? "This submission has already been recorded."
+          : "Record submitted successfully.";
+        const baseMsg = result.message || defaultMsg;
+        return {
+          confirmed: true,
+          duplicate: isDuplicate,
+          serverRejected: false,
+          message: serialInfo ? `${baseMsg} (S.No. ${serialInfo})` : baseMsg
+        };
+      }
+
+      return {
+        confirmed: false,
+        serverRejected: true,
+        message: result.message || result.error || "Backend rejected this entry. Entry was NOT saved."
+      };
+    }
+
+    async function sendEntryToBackend(payload, isRetry = false) {
+      const endpoint = SCRIPT_URL.trim();
+      if (!endpoint) {
+        return {
+          confirmed: false,
+          serverRejected: false,
+          networkError: false,
+          message: "Google Apps Script URL is not configured."
+        };
+      }
+
+      if (!navigator.onLine) {
+        return {
+          confirmed: false,
+          serverRejected: false,
+          networkError: true,
+          message: "No internet connection detected. Entry was NOT saved to Google Sheets."
+        };
+      }
+
+      const controller = new AbortController();
+      const timerId = setTimeout(() => controller.abort(), POST_TIMEOUT_MS);
+
+      try {
+        const requestPayload = isRetry ? { ...payload, isRetry: true } : payload;
+        const serializedBody = JSON.stringify(requestPayload);
+
+        // Simple CORS POST avoids preflight and reads the actual JSON confirmation from Google Apps Script
+        const response = await fetch(endpoint, {
+          method: "POST",
+          mode: "cors",
+          cache: "no-cache",
+          redirect: "follow",
+          keepalive: true,
+          signal: controller.signal,
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: serializedBody
+        });
+
+        const rawText = await response.text();
+        const trimmedText = rawText.trim();
+
+        if (!trimmedText) {
+          return {
+            confirmed: false,
+            serverRejected: false,
+            networkError: true,
+            message: response.ok
+              ? "Backend returned an empty response. Entry could not be confirmed."
+              : `Backend returned an empty HTTP ${response.status} response.`
+          };
+        }
+
+        if (/^<!doctype\s+html|^<html[\s>]|^<\s*body[\s>]/i.test(trimmedText)) {
+          return {
+            confirmed: false,
+            serverRejected: false,
+            networkError: true,
+            message:
+              "Google Apps Script returned an HTML page instead of JSON. Please verify the Web App is deployed with 'Who has access: Anyone' and returns ContentService JSON."
+          };
+        }
+
+        let parsed = null;
+        try {
+          parsed = JSON.parse(trimmedText);
+        } catch (_) {
+          return {
+            confirmed: false,
+            serverRejected: false,
+            networkError: true,
+            message: response.ok
+              ? "Backend returned malformed JSON. Please check your Google Apps Script doPost(e) response."
+              : `Backend HTTP ${response.status} error with invalid JSON response.`
+          };
+        }
+
+        if (!response.ok) {
+          return {
+            confirmed: false,
+            serverRejected: true,
+            networkError: false,
+            message: (parsed && (parsed.message || parsed.error)) || `Backend HTTP ${response.status} error.`
+          };
+        }
+
+        lastWarmupAt = Date.now();
+        return { ...parseServerConfirmation(parsed), networkError: false };
+      } catch (err) {
+        const message = err && err.name === "AbortError"
+          ? "Request timed out while waiting for Google Sheets confirmation."
+          : (err && err.message) || "Network or CORS error while contacting Google Sheets backend.";
+        return {
+          confirmed: false,
+          serverRejected: false,
+          networkError: true,
+          message
+        };
+      } finally {
+        clearTimeout(timerId);
+      }
+    }
+
+    function loadPendingQueue() {
+      try {
+        const raw = localStorage.getItem(QUEUE_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function savePendingQueue() {
+      try {
+        localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(pendingQueue));
+      } catch (_) {}
+    }
+
+    function addToPendingQueue(payload, note) {
+      if (pendingQueue.some((entry) => entry.id === payload.submissionId)) return;
+      pendingQueue.push({
+        id: payload.submissionId,
+        payload,
+        status: "Pending",
+        lastError: note || "Waiting for server confirmation",
+        createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      });
+      savePendingQueue();
+      renderQueuePanel();
+      updateStatusUI();
+    }
+
+    function removeQueuedEntry(id) {
+      pendingQueue = pendingQueue.filter((entry) => entry.id !== id);
+      savePendingQueue();
+      renderQueuePanel();
+      updateStatusUI();
+    }
+
+    async function retrySingleQueuedEntry(id) {
+      if (isProcessingQueue || isSubmitting) return;
+      const item = pendingQueue.find((entry) => entry.id === id);
+      if (!item) return;
+
+      isProcessingQueue = true;
+      updateStatusUI();
+      renderQueuePanel();
+
+      const outcome = await sendEntryToBackend(item.payload, true);
+      if (outcome.confirmed) {
+        removeQueuedEntry(id);
+        const title = outcome.duplicate
+          ? "Queued Entry Already Recorded"
+          : "Queued Entry Saved & Confirmed";
+        showNotification("success", title, outcome.message, 6000);
+      } else if (outcome.serverRejected) {
+        item.status = "Failed";
+        item.lastError = outcome.message;
+        savePendingQueue();
+        showNotification("error", "Queued Entry Rejected by Server", outcome.message, 8000);
+      } else {
+        item.status = "Pending";
+        item.lastError = outcome.message;
+        savePendingQueue();
+        showNotification("warning", "Still Pending (Unconfirmed)", outcome.message, 6000);
+      }
+
+      isProcessingQueue = false;
+      renderQueuePanel();
+      updateStatusUI();
+    }
+
+    async function processPendingQueue() {
+      if (isProcessingQueue || isSubmitting || !navigator.onLine) return;
+      const eligible = pendingQueue.filter((entry) => entry.status === "Pending");
+      if (eligible.length === 0) return;
+
+      isProcessingQueue = true;
+      updateStatusUI();
+      renderQueuePanel();
+
+      let confirmedCount = 0;
+      let rejectedCount = 0;
+
+      for (const entry of eligible) {
+        if (!navigator.onLine) break;
+        const outcome = await sendEntryToBackend(entry.payload, true);
+        if (outcome.confirmed) {
+          pendingQueue = pendingQueue.filter((q) => q.id !== entry.id);
+          confirmedCount += 1;
+          savePendingQueue();
+        } else if (outcome.serverRejected) {
+          entry.status = "Failed";
+          entry.lastError = outcome.message;
+          rejectedCount += 1;
+          savePendingQueue();
+        } else {
+          entry.status = "Pending";
+          entry.lastError = outcome.message;
+          savePendingQueue();
+          break;
+        }
+      }
+
+      isProcessingQueue = false;
+      renderQueuePanel();
+      updateStatusUI();
+
+      if (confirmedCount > 0 && rejectedCount === 0) {
+        showNotification(
+          "success",
+          "Pending Entries Confirmed",
+          `${confirmedCount} queued entr${confirmedCount === 1 ? "y was" : "ies were"} confirmed and saved in Google Sheets.`,
+          6000
+        );
+      } else if (rejectedCount > 0) {
+        showNotification(
+          "error",
+          "Queue Sync Completed with Errors",
+          `${confirmedCount} saved, ${rejectedCount} rejected by server validation. Check the queue list below.`,
+          8000
+        );
+      }
+    }
+
+    function renderQueuePanel() {
+      if (pendingQueue.length === 0) {
+        queuePanel.classList.add("hidden");
+        queueList.textContent = "";
+        return;
+      }
+
+      queuePanel.classList.remove("hidden");
+      const pendingCount = pendingQueue.filter((e) => e.status === "Pending").length;
+      const failedCount = pendingQueue.filter((e) => e.status === "Failed").length;
+      queuePanelTitle.textContent = `Unconfirmed Queue — ${pendingCount} Pending, ${failedCount} Failed`;
+      retryQueueAllBtn.disabled = isProcessingQueue || pendingCount === 0 || !navigator.onLine;
+
+      queueList.textContent = "";
+      const fragment = document.createDocumentFragment();
+
+      pendingQueue.forEach((entry) => {
+        const li = document.createElement("li");
+        li.className = "queue-item";
+
+        const main = document.createElement("div");
+        main.className = "queue-item-main";
+
+        const deptLabel = DEPARTMENT_BY_CODE[entry.payload.department]?.label || entry.payload.department;
+        const summary = document.createElement("div");
+        summary.className = "queue-item-summary";
+        summary.textContent = `${deptLabel} → ${entry.payload.machineUse} → ${entry.payload.itemName}${entry.payload.qty !== "" ? ` (Qty: ${entry.payload.qty})` : ""}`;
+
+        const sub = document.createElement("div");
+        sub.className = "queue-item-sub";
+        sub.textContent = `${entry.createdAt} • ${entry.lastError}`;
+
+        main.appendChild(summary);
+        main.appendChild(sub);
+
+        const controls = document.createElement("div");
+        controls.className = "queue-item-controls";
+
+        const chip = document.createElement("span");
+        chip.className = `status-chip is-${entry.status.toLowerCase()}`;
+        chip.textContent = entry.status;
+
+        const retryBtn = document.createElement("button");
+        retryBtn.type = "button";
+        retryBtn.className = "queue-mini-btn";
+        retryBtn.textContent = "Retry";
+        retryBtn.disabled = isProcessingQueue || !navigator.onLine;
+        retryBtn.addEventListener("click", () => retrySingleQueuedEntry(entry.id));
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "queue-mini-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.disabled = isProcessingQueue;
+        removeBtn.addEventListener("click", () => removeQueuedEntry(entry.id));
+
+        controls.appendChild(chip);
+        controls.appendChild(retryBtn);
+        controls.appendChild(removeBtn);
+
+        li.appendChild(main);
+        li.appendChild(controls);
+        fragment.appendChild(li);
+      });
+
+      queueList.appendChild(fragment);
     }
 
     /* ========================================================================
-       7. EVENT HANDLERS
+       11. LOADING STATE, FORM RESET & SUBMIT HANDLER
        ======================================================================== */
-    function handleFormSubmit(event) {
+    function setSubmittingState(loading) {
+      isSubmitting = loading;
+      submitBtn.disabled = loading;
+      submitBtn.setAttribute("aria-busy", String(loading));
+      submitBtn.classList.toggle("is-loading", loading);
+      submitBtnText.textContent = loading ? "Submitting..." : "Submit Entry";
+    }
+
+    function resetFormFields(keepNotification = false) {
+      activeDraftSubmissionId = null;
+      activeDraftAttempted = false;
+      form.reset();
+      clearAllErrors();
+      resetDanaReviewUI();
+
+      departmentSelect.clearSearch(false);
+      departmentSelect.clearSelection(true);
+
+      switchFieldsToPredefinedMode();
+      machineSelect.clearOptions();
+      machineSelect.setDisabled(true);
+      machineSelect.setPlaceholder("Select Department first");
+
+      itemSelect.clearOptions();
+      itemSelect.setDisabled(true);
+      itemSelect.setPlaceholder("Select Machine Use first");
+      setItemHint("");
+
+      setAutoDateTime();
+      if (!keepNotification) hideNotification();
+      departmentSelect.focus();
+    }
+
+    async function handleFormSubmit(event) {
       event.preventDefault();
 
-      // Prevent accidental double-click within 250ms
-      const now = Date.now();
-      if (now - lastSubmitTime < 250) {
-        return;
-      }
+      // Immediate synchronous duplicate-click guard
+      if (isSubmitting) return;
 
       if (!SCRIPT_URL.trim()) {
         showNotification(
           "warning",
           "Live Submission Not Connected",
-          "Add your Google Apps Script Web App URL to SCRIPT_URL to enable live saving.",
+          "Configure SCRIPT_URL with your Google Apps Script Web App URL before submitting.",
           0
         );
         return;
       }
 
+      // 1. Validate immediately in a single pass
       if (!validateForm()) {
         showNotification(
           "error",
-          "Invalid Quantity",
-          "Please enter a positive number in Qty or leave it blank.",
-          5000
+          "Please Check Required Fields",
+          "Department, Machine Use, and Item Name are required, and Quantity must be positive if entered.",
+          6000
         );
         return;
       }
 
-      lastSubmitTime = now;
+      // 2. Collect payload (reusing activeDraftSubmissionId if retrying the same entry)
       const payload = collectFormData();
 
-      // Enqueue locally and reset form immediately (zero wait)
-      syncQueue.push({
-        id: `${now}-${Math.random().toString(36).slice(2, 7)}`,
-        payload,
-        retries: 0
-      });
-      saveQueue();
-
-      resetFormFields(true);
-
-      if (navigator.onLine) {
-        showNotification(
-          "success",
-          "Entry Submitted",
-          "Saving to Google Sheets in background — ready for next entry.",
-          3500
-        );
-        processSyncQueue();
-      } else {
-        updateIntegrationStatusUI();
+      if (!navigator.onLine) {
         showNotification(
           "warning",
-          "Saved Offline",
-          "No internet detected. Entry is queued and will auto-sync when reconnected.",
-          5000
+          "Offline — Entry Not Saved",
+          "Your internet is offline. Your entered data has been preserved. You may queue it as Pending for automatic retry when online.",
+          0,
+          [
+            {
+              label: "Save to Pending Queue",
+              onClick: () => {
+                addToPendingQueue(payload, "Saved offline — waiting for internet connection");
+                resetFormFields(true);
+                showNotification(
+                  "warning",
+                  "Added to Pending Queue (Not Yet Saved)",
+                  "Entry is stored locally as Pending and will sync once internet reconnects.",
+                  6000
+                );
+              }
+            }
+          ]
         );
+        return;
+      }
+
+      // 3. Lock Submit button, show spinner & "Submitting...", and start request immediately
+      const isRetryAttempt = activeDraftAttempted;
+      activeDraftAttempted = true;
+      setSubmittingState(true);
+      hideNotification();
+
+      try {
+        const result = await sendEntryToBackend(payload, isRetryAttempt);
+
+        if (result.confirmed) {
+          // Reset form and clear submissionId ONLY after genuine server confirmation
+          resetFormFields(true);
+          const successTitle = result.duplicate
+            ? "Already Recorded (Duplicate Prevented)"
+            : "Entry Saved & Confirmed";
+          showNotification("success", successTitle, result.message, 6000);
+        } else if (result.serverRejected) {
+          // Preserve entered form data and keep submissionId for safe retry
+          showNotification("error", "Submission Rejected by Server", result.message, 0);
+        } else {
+          // Uncertain network/response failure: preserve data & allow safe retry or queuing with same submissionId
+          showNotification(
+            "error",
+            "Submission Not Confirmed",
+            `${result.message} Your entered form values have been preserved so nothing is lost.`,
+            0,
+            [
+              {
+                label: "Save to Pending Queue",
+                onClick: () => {
+                  addToPendingQueue(payload, result.message);
+                  resetFormFields(true);
+                  showNotification(
+                    "warning",
+                    "Saved as Pending (Unconfirmed)",
+                    "Entry moved to Pending Queue. It will only be removed after confirmed Google Sheets saving.",
+                    6000
+                  );
+                }
+              }
+            ]
+          );
+        }
+      } finally {
+        setSubmittingState(false);
       }
     }
 
+    /* ========================================================================
+       12. EVENT LISTENERS & BOOTSTRAP (ZERO MASTER-DATA NETWORK CALLS)
+       ======================================================================== */
     fields.qty.addEventListener("keydown", (event) => {
-      if (["-", "+", "e", "E"].includes(event.key)) {
-        event.preventDefault();
-      }
+      if (["-", "+", "e", "E"].includes(event.key)) event.preventDefault();
     });
 
-    Object.entries(fields).forEach(([key, el]) => {
-      const eventName = el.tagName === "SELECT" ? "change" : "input";
-      el.addEventListener(eventName, () => clearFieldError(key));
+    [
+      ["machineUse", fields.machineUseManual],
+      ["machineUse", fields.reviewMachineManual],
+      ["itemName", fields.itemNameManual],
+      ["qty", fields.qty],
+      ["date", fields.date],
+      ["outTime", fields.outTime],
+      ["givenTo", fields.givenTo],
+      ["issuedBy", fields.issuedBy],
+      ["remarks", fields.remarks]
+    ].forEach(([key, el]) => {
+      el.addEventListener("input", () => {
+        clearFieldError(key);
+        invalidateDraftSubmissionId();
+      });
+    });
+
+    danaReviewToggleBtn.addEventListener("click", () => {
+      if (isSubmitting) return;
+      applyDanaReviewMode(!isDanaReviewManualMode);
     });
 
     form.addEventListener("submit", handleFormSubmit);
-    clearBtn.addEventListener("click", () => resetFormFields(false));
-    syncDateTimeBtn.addEventListener("click", setAutoDateTime);
+    clearBtn.addEventListener("click", () => { if (!isSubmitting) resetFormFields(false); });
+    syncDateTimeBtn.addEventListener("click", () => {
+      if (!isSubmitting) {
+        setAutoDateTime();
+        invalidateDraftSubmissionId();
+      }
+    });
+    retryQueueAllBtn.addEventListener("click", processPendingQueue);
     alertCloseBtn.addEventListener("click", hideNotification);
 
     window.addEventListener("online", () => {
-      updateIntegrationStatusUI();
-      processSyncQueue();
+      updateStatusUI();
+      warmUpBackend(true);
+      processPendingQueue();
     });
 
-    window.addEventListener("offline", updateIntegrationStatusUI);
+    window.addEventListener("offline", () => {
+      updateStatusUI();
+      renderQueuePanel();
+    });
 
-    /* ========================================================================
-       8. BOOTSTRAP ON PAGE LOAD
-       ======================================================================== */
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        warmUpBackend(false);
+      }
+    });
+
     document.addEventListener("DOMContentLoaded", () => {
-      populateDepartments();
-      setAutoDateTime();
-      updateIntegrationStatusUI();
+      const deptOptions = DEPARTMENTS.map((dept) => ({
+        value: dept.code,
+        label: dept.label,
+        meta: dept.code,
+        searchText: `${dept.label} ${dept.code}`
+      }));
+      departmentSelect.setOptions(deptOptions);
 
-      // Resume any pending entries saved before a refresh/close
-      if (syncQueue.length > 0 && navigator.onLine) {
-        processSyncQueue();
+      setAutoDateTime();
+      renderQueuePanel();
+      updateStatusUI();
+
+      // Wake up Apps Script container in background right after initial paint
+      setTimeout(() => warmUpBackend(true), 300);
+
+      if (pendingQueue.length > 0 && navigator.onLine) {
+        processPendingQueue();
       }
     });
   </script>
 </body>
 </html>
+Designing standalone single file code and server scripts
