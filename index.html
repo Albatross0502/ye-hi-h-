@@ -1,5 +1,8 @@
 
 
+
+HTML icon
+index-v2
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1348,6 +1351,7 @@
       Object.freeze({ code: "KC", label: "Kachri", manual: false }),
       Object.freeze({ code: "TD", label: "Tukdi", manual: false }),
       Object.freeze({ code: "SN", label: "Saini Warehouse", manual: false }),
+      Object.freeze({ code: "Housekeeping", label: "Housekeeping", manual: false, noMachine: true, badge: "HK" }),
       Object.freeze({ code: "General", label: "Outer (General)", manual: true })
     ]);
 
@@ -2482,6 +2486,47 @@
             "Controller"
           ]
         }
+      },
+      "Housekeeping": {
+        "code": "Housekeeping",
+        "label": "Housekeeping",
+        "manual": false,
+        "noMachine": true,
+        "machines": {
+          "": [
+            "Harpic",
+            "Tezab - Acid",
+            "Kapda Pochha (Chhota)",
+            "Kapda Pochha (Bada)",
+            "Wiper Double Rubber Fall",
+            "Wiper Rubber (Aalag Se)",
+            "Nariyal Jhadu",
+            "Lakdi Danda",
+            "Glass Cleaner",
+            "Floor Cleaner Multi Purpose",
+            "Urinal Jali - Cube",
+            "Scrub Brush",
+            "Plastic Brush",
+            "Kapoor Goli",
+            "Phenyl",
+            "Room Freshener (Gulab Liquid)",
+            "Room Freshener (Chandan Liquid)",
+            "Tikiya (Odonil)",
+            "Steel Cleaner",
+            "Furniture Cleaner",
+            "Aluminium Cleaner",
+            "Jala Utarne Wala (50 Feet)",
+            "Jala Utarne Wala (10–20 Feet)",
+            "Caustic Soda",
+            "Seekh Jhadu",
+            "Phool Jhadu",
+            "Paani Ki Jhadu",
+            "Handwash Liquid (Lemon)",
+            "Handwash Liquid (Rose)",
+            "Plastic Jhadu",
+            "Waste Pipe (Sink / Washbasin)"
+          ]
+        }
       }
     };
 
@@ -3267,6 +3312,10 @@
 
     function isOuterDepartment(deptCode) { return deptCode === "General"; }
 
+    function isNoMachineDepartment(deptCode) {
+      return Boolean(deptCode && DEPARTMENT_BY_CODE[deptCode] && DEPARTMENT_BY_CODE[deptCode].noMachine);
+    }
+
     function isPredefinedDepartment(deptCode) {
       return Boolean(deptCode && ITEM_MASTER[deptCode] && ITEM_MASTER[deptCode].machines);
     }
@@ -3477,6 +3526,7 @@
       fields.machineUseManual.classList.add("hidden");
       fields.machineUseManual.value = "";
       machineContainer.classList.remove("hidden");
+      machineSelect.triggerBtn.setAttribute("aria-required", "true");
       machineLabel.setAttribute("for", "machineUseTrigger");
       machineModeBadge.classList.add("hidden");
 
@@ -3520,6 +3570,28 @@
 
       if (isOuterDepartment(deptCode)) {
         switchFieldsToOuterManualMode();
+        return;
+      }
+
+      if (isNoMachineDepartment(deptCode)) {
+        switchFieldsToPredefinedMode();
+        machineSelect.setDisabled(true);
+        machineSelect.setPlaceholder("Leave Blank (Not Applicable)");
+        machineSelect.triggerBtn.setAttribute("aria-required", "false");
+        machineModeBadge.textContent = "Blank";
+        machineModeBadge.classList.remove("hidden");
+
+        const items = getItemsForMachine(deptCode, "");
+        const itemOptions = items.map((originalName) => ({
+          value: originalName,
+          label: originalName,
+          searchText: originalName
+        }));
+
+        itemSelect.setOptions(itemOptions);
+        itemSelect.setPlaceholder("Select Item Name");
+        itemSelect.setDisabled(itemOptions.length === 0);
+        setItemHint(`${itemOptions.length} original item${itemOptions.length === 1 ? "" : "s"} available.`);
         return;
       }
 
@@ -3662,6 +3734,17 @@
           firstInvalidFocus = firstInvalidFocus || (() => fields.itemNameManual.focus());
           isValid = false;
         }
+      } else if (deptCode && isNoMachineDepartment(deptCode)) {
+        const selectedItem = itemSelect.getValue();
+        if (!selectedItem) {
+          setFieldError("itemName", "Please select an Item Name from the embedded master list.");
+          firstInvalidFocus = firstInvalidFocus || (() => itemSelect.focus());
+          isValid = false;
+        } else if (!isValidPredefinedItem(deptCode, "", selectedItem)) {
+          setFieldError("itemName", "Selected item does not belong to the selected Department.");
+          firstInvalidFocus = firstInvalidFocus || (() => itemSelect.focus());
+          isValid = false;
+        }
       } else if (deptCode && isPredefinedDepartment(deptCode)) {
         const selectedMachine = machineSelect.getValue();
 
@@ -3751,6 +3834,9 @@
       if (isOuter) {
         machineUseValue = fields.machineUseManual.value.trim();
         itemNameValue = fields.itemNameManual.value.trim();
+      } else if (isNoMachineDepartment(deptCode)) {
+        machineUseValue = "";
+        itemNameValue = itemSelect.getValue();
       } else if (deptCode === "DN" && machineSelect.getValue() === DANA_REVIEW_GROUP && isDanaReviewManualMode) {
         const customMachine = fields.reviewMachineManual.value.trim();
         machineUseValue = customMachine || DANA_REVIEW_GROUP;
@@ -4092,9 +4178,10 @@
         main.className = "queue-item-main";
 
         const deptLabel = DEPARTMENT_BY_CODE[entry.payload.department]?.label || entry.payload.department;
+        const machinePart = entry.payload.machineUse ? ` → ${entry.payload.machineUse}` : "";
         const summary = document.createElement("div");
         summary.className = "queue-item-summary";
-        summary.textContent = `${deptLabel} → ${entry.payload.machineUse} → ${entry.payload.itemName}${entry.payload.qty !== "" ? ` (Qty: ${entry.payload.qty})` : ""}`;
+        summary.textContent = `${deptLabel}${machinePart} → ${entry.payload.itemName}${entry.payload.qty !== "" ? ` (Qty: ${entry.payload.qty})` : ""}`;
 
         const sub = document.createElement("div");
         sub.className = "queue-item-sub";
@@ -4190,10 +4277,13 @@
 
       // 1. Validate immediately in a single pass
       if (!validateForm()) {
+        const isNoMachine = isNoMachineDepartment(departmentSelect.getValue());
         showNotification(
           "error",
           "Please Check Required Fields",
-          "Department, Machine Use, and Item Name are required, and Quantity must be positive if entered.",
+          isNoMachine
+            ? "Department and Item Name are required, and Quantity must be positive if entered."
+            : "Department, Machine Use, and Item Name are required, and Quantity must be positive if entered.",
           6000
         );
         return;
@@ -4336,8 +4426,8 @@
       const deptOptions = DEPARTMENTS.map((dept) => ({
         value: dept.code,
         label: dept.label,
-        meta: dept.code,
-        searchText: `${dept.label} ${dept.code}`
+        meta: dept.badge || dept.code,
+        searchText: `${dept.label} ${dept.code} ${dept.badge || ""}`
       }));
       departmentSelect.setOptions(deptOptions);
 
@@ -4355,4 +4445,4 @@
   </script>
 </body>
 </html>
-Designing standalone single file code and server scripts
+Generating index.html file for download
